@@ -565,3 +565,25 @@ main .view.visible {
   top: 0; left: 0; right: 0; bottom: 0;
   background: radial-gradient(1000px 600px at center, #10131a 0%, #07090d 100%);
 }
+/* ===== FIX DEFINITIVO: Mostrar solo la vista activa ===== */
+
+/* Ocultar todas las vistas por defecto */
+.view {
+  display: none !important;
+}
+
+/* Mostrar solo la vista activa (la que tiene la clase .visible) */
+.view.visible {
+  display: block !important;
+}
+
+/* El login necesita modo flex para centrarse */
+.fullscreen-login.view {
+  display: none !important;
+}
+.fullscreen-login.view.visible {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
