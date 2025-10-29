@@ -1698,4 +1698,61 @@ document.addEventListener('DOMContentLoaded', wireAll);
   // Exponer por si lo quieres usar en otros lados
   window.showView = showView;
 })();
+/* =========================================================
+   SPA HARD CONTROLLER — Solo una .view visible (incl. login)
+   ========================================================= */
+(function () {
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const byId = (id) => document.getElementById(id);
 
+  // Fuerza el estado "solo una vista visible"
+  function showView(id) {
+    const views = $$('.view');
+    for (const v of views) {
+      const active = v.id === id;
+      v.classList.toggle('visible', active);
+      v.setAttribute('aria-hidden', active ? 'false' : 'true');
+    }
+    // marcar activo en menú lateral
+    $$('.nav-btn[data-target]').forEach(b => {
+      b.classList.toggle('active', b.dataset.target === id);
+    });
+  }
+
+  // Si existe overlay de login, úsalo como vista
+  function goLogin() { showView('login'); }
+
+  // Enlazar menú lateral (data-target="idDeLaVista")
+  $$('.nav-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      if (target) showView(target);
+    });
+  });
+
+  // Inicial robusto: si login está visible, respetarlo; sino, ir a 'home' o al primer botón activo
+  window.addEventListener('DOMContentLoaded', () => {
+    const login = byId('login');
+    if (login && login.classList.contains('visible')) {
+      goLogin();
+    } else {
+      const activeBtn = document.querySelector('.nav-btn.active[data-target]');
+      showView(activeBtn ? activeBtn.dataset.target : 'home');
+    }
+  });
+
+  // Enforcer periódico por si otro script/estilo ensucia el estado
+  function enforceSPA() {
+    const views = $$('.view');
+    // si hay más de una visible, deja solo la primera (o el login si está)
+    const visibles = views.filter(v => v.classList.contains('visible'));
+    if (visibles.length > 1) {
+      const keep = byId('login')?.classList.contains('visible') ? byId('login') : visibles[0];
+      views.forEach(v => v.classList.toggle('visible', v === keep));
+    }
+  }
+  setInterval(enforceSPA, 500);
+
+  // Exponer por si quieres llamar desde otros flujos
+  window.showView = showView;
+})();
