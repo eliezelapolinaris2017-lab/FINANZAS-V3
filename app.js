@@ -1642,3 +1642,60 @@ document.addEventListener('DOMContentLoaded', wireAll);
   const first = document.querySelector('.view');
   if (first) showView(first.id);
 })();
+/* =========================================================
+   SPA HARD ENFORCER: solo una vista visible
+   (pegar al final de app.js)
+   ========================================================= */
+(function () {
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const byId = (id) => document.getElementById(id);
+
+  function showView(id) {
+    const views = $$('.view');
+    for (const v of views) {
+      if (v.id === id) {
+        v.classList.add('visible');
+        v.setAttribute('aria-hidden', 'false');
+      } else {
+        v.classList.remove('visible');
+        v.setAttribute('aria-hidden', 'true');
+      }
+    }
+    // marcar activo en menú
+    $$('.nav-btn[data-target]').forEach(b => b.classList.toggle('active', b.dataset.target === id));
+  }
+
+  // Enlazar menú lateral
+  $$('.nav-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.target));
+  });
+
+  // Vista inicial segura:
+  // - si login está visible, respetarlo
+  // - si no, usar el botón activo o 'home'
+  window.addEventListener('DOMContentLoaded', () => {
+    const login = byId('login');
+    if (login && login.classList.contains('visible')) {
+      showView('login');
+    } else {
+      const active = document.querySelector('.nav-btn.active[data-target]');
+      showView(active ? active.dataset.target : 'home');
+    }
+  });
+
+  // Enforcer: si por estilos o scripts externos se muestran varias, corrige
+  function enforce() {
+    const visible = $$('.view.visible');
+    if (visible.length > 1) {
+      // deja visible solo la primera (o login si está)
+      const keep = byId('login')?.classList.contains('visible') ? byId('login') : visible[0];
+      $$('.view').forEach(v => v.classList.toggle('visible', v === keep));
+    }
+  }
+  // Corrección periódica suave (no afecta performance)
+  setInterval(enforce, 500);
+
+  // Exponer por si lo quieres usar en otros lados
+  window.showView = showView;
+})();
+
