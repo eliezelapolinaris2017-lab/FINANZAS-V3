@@ -599,3 +599,19 @@ main .view.visible {
   align-items:center;
   flex-direction:column;
 }
+/* ===== SPA: mostrar SOLO la vista activa ===== */
+.view{ display:none !important; }
+.view.visible{ display:block !important; }
+
+/* Login (overlay a pantalla completa y centrado) */
+.fullscreen-login.view{ display:none !important; }
+.fullscreen-login.view.visible{
+  display:flex !important;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+/* Seguridad: si algún contenedor fuerza display en secciones, no lo permitas */
+section.view, div.view { display:none !important; }
+section.view.visible, div.view.visible { display:block !important; }
