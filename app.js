@@ -1506,3 +1506,98 @@ document.addEventListener('DOMContentLoaded', wireAll);
   // Exponer por si quieres llamarlo manualmente desde tu propio flujo
   window.updateReconMatchSummaryFromTable = updateReconMatchSummaryFromTable;
 })();
+/* =========================================================
+   REF en Gastos e Ingresos — Guardar + Renderizar
+   (pegar al final de app.js — no rompe tu lógica)
+   ========================================================= */
+(function () {
+  const $ = (id) => document.getElementById(id);
+
+  // --- Utilidad segura para leer value ---
+  const val = (el) => (el && el.value != null ? el.value : "");
+
+  // --- MIGRACIÓN SUAVE: asegura que cada item tenga 'ref' ---
+  function ensureRefField() {
+    try {
+      const data = JSON.parse(localStorage.getItem("finanzasData") || "{}");
+      if (Array.isArray(data.expensesDaily)) {
+        data.expensesDaily.forEach(e => { if (!("ref" in e)) e.ref = ""; });
+      }
+      if (Array.isArray(data.incomesDaily)) {
+        data.incomesDaily.forEach(i => { if (!("ref" in i)) i.ref = ""; });
+      }
+      localStorage.setItem("finanzasData", JSON.stringify(data));
+    } catch (e) { /* ignore */ }
+  }
+  ensureRefField();
+
+  // --- HOOK formularios para inyectar 'ref' en el objeto que ya guardas ---
+  // Si tu código crea el objeto manualmente, este hook no molesta;
+  // si tomas los values al vuelo, también funciona.
+  const expForm = $("expenseForm");
+  if (expForm) {
+    expForm.addEventListener("submit", () => {
+      expForm.dataset._ref = val($("expRef")); // stash por si tu save lee del form
+    }, { capture: true });
+  }
+  const incForm = $("incomeForm");
+  if (incForm) {
+    incForm.addEventListener("submit", () => {
+      incForm.dataset._ref = val($("incRef"));
+    }, { capture: true });
+  }
+
+  // --- API pequeña para usar desde tu guardado si quieres: window.getFormRef('expense'|'income') ---
+  window.getFormRef = (type) => {
+    if (type === "expense") return $("expRef") ? $("expRef").value : (expForm?.dataset?._ref || "");
+    if (type === "income")  return $("incRef") ? $("incRef").value : (incForm?.dataset?._ref || "");
+    return "";
+  };
+
+  // --- RENDER: inserta la columna Ref si tu generador de filas no la imprime todavía ---
+  // Gastos: columnas esperadas -> Fecha | Categoría | Descripción | Método | Ref | Monto | Nota | Acciones
+  window.renderExpenseRowWithRef = function (e, idx) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${e.date || ""}</td>
+      <td>${e.category || ""}</td>
+      <td>${e.description || ""}</td>
+      <td>${e.method || ""}</td>
+      <td>${e.ref || ""}</td>
+      <td class="num">${(window.fmt ? window.fmt(e.amount) : Number(e.amount||0).toFixed(2))}</td>
+      <td>${e.note || ""}</td>
+      <td class="row-actions">
+        <button class="btn-outline" data-edit="${idx}">Editar</button>
+        <button class="btn-outline" data-del="${idx}">Eliminar</button>
+      </td>
+    `;
+    return tr;
+  };
+
+  // Ingresos: columnas -> Fecha | Cliente | Método | Ref | Monto | Acciones
+  window.renderIncomeRowWithRef = function (i, idx) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i.date || ""}</td>
+      <td>${i.client || ""}</td>
+      <td>${i.method || ""}</td>
+      <td>${i.ref || ""}</td>
+      <td class="num">${(window.fmt ? window.fmt(i.amount) : Number(i.amount||0).toFixed(2))}</td>
+      <td class="row-actions">
+        <button class="btn-outline" data-edit="${idx}">Editar</button>
+        <button class="btn-outline" data-del="${idx}">Eliminar</button>
+      </td>
+    `;
+    return tr;
+  };
+
+  // --- Ayuda: si ya tienes funciones que pintan las tablas, cambia la creación de filas por las de arriba ---
+  // Ejemplo:
+  //   tbody.appendChild(window.renderExpenseRowWithRef(expense, idx));
+  //   tbody.appendChild(window.renderIncomeRowWithRef(income, idx));
+
+  // --- EXTRA: si usas objeto al guardar, añade la propiedad 'ref' ---
+  // Ejemplo para tu función de guardado (ilustrativo):
+  //   const obj = { date, category, description, method, amount, note, ref: window.getFormRef('expense') };
+  //   const obj = { date, client, method, amount, ref: window.getFormRef('income') };
+})();
