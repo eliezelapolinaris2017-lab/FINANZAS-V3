@@ -162,57 +162,44 @@
       </div>
     </section>
 
-    <!-- ============ ENTRADAS DE DINERO (totales arriba) ============ -->
-    <section id="incomes" class="view" data-title="Entradas de Dinero">
-      <div class="card">
-        <div class="card-title">Nuevo ingreso</div>
-        <form id="incomeForm" class="grid3">
-          <label>Fecha <input type="date" id="incDate"/></label>
-          <label>Cliente/Origen <input type="text" id="incClient" placeholder="Cliente u origen"/></label>
-          <label>Método
-            <select id="incMethod">
-              <option>Efectivo</option><option>Tarjeta</option><option>Cheque</option>
-              <option>ATH Móvil</option><option>Transferencia</option>
-            </select>
-          </label>
-          <label>Monto <input type="number" step="0.01" id="incAmount"/></label>
-          <div class="full row g">
-            <button type="button" id="addIncome" class="btn-outline">Hoy</button>
-            <button class="btn">Guardar Ingreso</button>
-          </div>
-        </form>
-      </div>
+<!-- === FORMULARIO INGRESOS (con Referencia) === -->
+<div class="card">
+  <div class="card-title">Nuevo ingreso</div>
+  <form id="incomeForm" class="grid3">
+    <label>Fecha <input type="date" id="incDate"/></label>
+    <label>Cliente/Origen <input type="text" id="incClient" placeholder="Cliente u origen"/></label>
+    <label>Método
+      <select id="incMethod">
+        <option>Efectivo</option><option>Tarjeta</option><option>Cheque</option>
+        <option>ATH Móvil</option><option>Transferencia</option>
+      </select>
+    </label>
 
-      <!-- Totales por método arriba -->
-      <div class="card">
-        <div class="header-inline">
-          <div class="card-title">Totales por método</div>
-          <div class="stats-wrap">
-            <div class="stat-card">
-              <span class="label">Total general</span>
-              <span class="value num" id="incSumTotal">—</span>
-            </div>
-          </div>
-        </div>
-        <div id="incSumMethods" class="pills"></div>
-      </div>
+    <!-- NUEVO -->
+    <label>Referencia <input type="text" id="incRef" placeholder="Ej. #cheque / #ATH / #tarjeta"/></label>
 
-      <div class="card">
-        <div class="row between">
-          <div class="card-title">Listado de ingresos</div>
-          <div class="row g">
-            <label>Desde <input type="date" id="fIncFrom"/></label>
-            <label>Hasta <input type="date" id="fIncTo"/></label>
-            <button id="fIncApply" class="btn-outline">Filtrar</button>
-          </div>
-        </div>
-        <table id="incomesTable" class="data">
-          <thead><tr><th>Fecha</th><th>Cliente</th><th>Método</th><th>Monto</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+    <label>Monto <input type="number" step="0.01" id="incAmount"/></label>
+    <div class="full row g">
+      <button type="button" id="addIncome" class="btn-outline">Hoy</button>
+      <button class="btn">Guardar Ingreso</button>
+    </div>
+  </form>
+</div>
 
+<!-- === CABECERA TABLA INGRESOS (agrega columna Ref) === -->
+<table id="incomesTable" class="data">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Cliente</th>
+      <th>Método</th>
+      <th>Ref</th>   <!-- NUEVO -->
+      <th>Monto</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
     <!-- ============ PAGO DE NÓMINA (totales arriba) ============ -->
     <section id="payments" class="view" data-title="Pago de Nómina">
       <div class="card">
