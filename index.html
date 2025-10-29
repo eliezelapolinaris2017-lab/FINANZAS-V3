@@ -99,38 +99,58 @@
       </div>
     </section>
 
-    <!-- ============ GASTOS DIARIOS (totales arriba) ============ -->
-    <section id="expenses" class="view" data-title="Gastos Diarios">
-      <div class="card">
-        <div class="card-title">Nuevo gasto</div>
-        <form id="expenseForm" class="grid3">
-          <label>Fecha <input type="date" id="expDate"/></label>
-          <label>Categoría
-            <select id="expCategory">
-              <option>Gasolina</option><option>Comida</option><option>Transporte</option>
-              <option>Mantenimiento</option><option>Renta/Alquiler</option>
-              <option>Servicios (Luz/Agua/Internet)</option><option>Insumos</option>
-              <option>Nómina</option><option>Impuestos</option><option>Herramientas</option>
-              <option>Publicidad/Marketing</option><option>Viajes</option><option>Papelería</option>
-              <option>Licencias y Software</option><option>Seguros</option>
-              <option>Equipos</option><option>Materiales</option><option>Otros</option>
-            </select>
-          </label>
-          <label>Método
-            <select id="expMethod">
-              <option>Efectivo</option><option>Tarjeta</option><option>Cheque</option>
-              <option>ATH Móvil</option><option>Transferencia</option>
-            </select>
-          </label>
-          <label class="full">Descripción <input type="text" id="expDesc" placeholder="Descripción"/></label>
-          <label>Monto <input type="number" step="0.01" id="expAmount"/></label>
-          <label>Nota <input type="text" id="expNote" placeholder="Nota"/></label>
-          <div class="full row g">
-            <button type="button" id="addExpense" class="btn-outline">Hoy</button>
-            <button class="btn">Guardar Gasto</button>
-          </div>
-        </form>
-      </div>
+<!-- === FORMULARIO GASTOS (con Referencia) === -->
+<div class="card">
+  <div class="card-title">Nuevo gasto</div>
+  <form id="expenseForm" class="grid3">
+    <label>Fecha <input type="date" id="expDate"/></label>
+    <label>Categoría
+      <select id="expCategory">
+        <option>Gasolina</option><option>Comida</option><option>Transporte</option>
+        <option>Mantenimiento</option><option>Renta/Alquiler</option>
+        <option>Servicios (Luz/Agua/Internet)</option><option>Insumos</option>
+        <option>Nómina</option><option>Impuestos</option><option>Herramientas</option>
+        <option>Publicidad/Marketing</option><option>Viajes</option><option>Papelería</option>
+        <option>Licencias y Software</option><option>Seguros</option>
+        <option>Equipos</option><option>Materiales</option><option>Otros</option>
+      </select>
+    </label>
+    <label>Método
+      <select id="expMethod">
+        <option>Efectivo</option><option>Tarjeta</option><option>Cheque</option>
+        <option>ATH Móvil</option><option>Transferencia</option>
+      </select>
+    </label>
+
+    <!-- NUEVO -->
+    <label>Referencia <input type="text" id="expRef" placeholder="Ej. #cheque / #ATH / #tarjeta"/></label>
+
+    <label class="full">Descripción <input type="text" id="expDesc" placeholder="Descripción"/></label>
+    <label>Monto <input type="number" step="0.01" id="expAmount"/></label>
+    <label>Nota <input type="text" id="expNote" placeholder="Nota"/></label>
+    <div class="full row g">
+      <button type="button" id="addExpense" class="btn-outline">Hoy</button>
+      <button class="btn">Guardar Gasto</button>
+    </div>
+  </form>
+</div>
+
+<!-- === CABECERA TABLA GASTOS (agrega columna Ref) === -->
+<table id="expensesTable" class="data">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Categoría</th>
+      <th>Descripción</th>
+      <th>Método</th>
+      <th>Ref</th> <!-- NUEVO -->
+      <th>Monto</th>
+      <th>Nota</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
       <!-- Totales arriba -->
       <div class="card">
