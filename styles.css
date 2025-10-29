@@ -506,3 +506,10 @@ a:hover{ text-decoration:underline; }
 body.locked {
   overflow: hidden;
 }
+/* Alinear Monto después de añadir columna Ref */
+#expensesTable th:nth-child(6), #expensesTable td:nth-child(6),
+#incomesTable  th:nth-child(5), #incomesTable  td:nth-child(5){
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
