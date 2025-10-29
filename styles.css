@@ -528,3 +528,40 @@ main .view.visible {
 .fullscreen-login.view.visible {
   display: flex !important;
 }
+/* =========================================================
+   FIX DEFINITIVO – Mostrar solo la vista activa
+   ========================================================= */
+
+/* Oculta TODAS las vistas por defecto */
+.view {
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .25s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* Solo la vista activa estará visible */
+.view.visible {
+  display: block !important;
+  visibility: visible;
+  opacity: 1;
+  z-index: 5;
+}
+
+/* Pantalla de login (PIN) centrada y visible solo cuando tenga .visible */
+.fullscreen-login.view {
+  display: none !important;
+  align-items: center;
+  justify-content: center;
+}
+.fullscreen-login.view.visible {
+  display: flex !important;
+  opacity: 1;
+  visibility: visible;
+  z-index: 999;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(1000px 600px at center, #10131a 0%, #07090d 100%);
+}
