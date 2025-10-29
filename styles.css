@@ -513,3 +513,18 @@ body.locked {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
+/* ===== FIX DURO: solo mostrar la vista activa ===== */
+main .view { 
+  display: none !important;
+}
+main .view.visible {
+  display: block !important;
+}
+
+/* El login necesita flex cuando está visible */
+.fullscreen-login.view { 
+  display: none !important;
+}
+.fullscreen-login.view.visible {
+  display: flex !important;
+}
