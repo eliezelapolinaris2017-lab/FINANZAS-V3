@@ -1622,3 +1622,23 @@ document.addEventListener('DOMContentLoaded', wireAll);
   const active = document.querySelector('.nav-btn.active[data-target]');
   showView(active ? active.dataset.target : 'home');
 })();
+// ===== Alternar vistas SPA correctamente =====
+(function(){
+  const showView = id => {
+    document.querySelectorAll('.view').forEach(v =>
+      v.classList.toggle('visible', v.id === id)
+    );
+    // resalta botón activo
+    document.querySelectorAll('.nav-btn[data-target]').forEach(b =>
+      b.classList.toggle('active', b.dataset.target === id)
+    );
+  };
+
+  document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.target));
+  });
+
+  // inicia con la primera vista si no hay otra activa
+  const first = document.querySelector('.view');
+  if (first) showView(first.id);
+})();
