@@ -587,3 +587,15 @@ main .view.visible {
   align-items: center;
   flex-direction: column;
 }
+/* ===== SPA: mostrar solo la vista activa ===== */
+.view{ display:none !important; }
+.view.visible{ display:block !important; }
+
+/* El login necesita flex para centrarse */
+.fullscreen-login.view{ display:none !important; }
+.fullscreen-login.view.visible{
+  display:flex !important;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
