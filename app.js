@@ -1601,3 +1601,24 @@ document.addEventListener('DOMContentLoaded', wireAll);
   //   const obj = { date, category, description, method, amount, note, ref: window.getFormRef('expense') };
   //   const obj = { date, client, method, amount, ref: window.getFormRef('income') };
 })();
+/* ===== FIX NAV: alternar vistas SPA con .visible ===== */
+(function () {
+  const views = [...document.querySelectorAll('main .view')];
+  const byId = id => document.getElementById(id);
+  function showView(id) {
+    views.forEach(v => v.classList.toggle('visible', v.id === id));
+    // marca activo en menú
+    document.querySelectorAll('.nav-btn[data-target]').forEach(b => {
+      b.classList.toggle('active', b.dataset.target === id);
+    });
+  }
+
+  // Click en menú lateral
+  document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.target));
+  });
+
+  // Inicial: si hay uno activo, úsalo; si no, 'home' (el login es aparte)
+  const active = document.querySelector('.nav-btn.active[data-target]');
+  showView(active ? active.dataset.target : 'home');
+})();
