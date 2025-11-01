@@ -36,9 +36,7 @@ const DEFAULT_STATE = {
     logoBase64: '',
     theme: { primary: '#0B0D10', accent: '#C7A24B', text: '#F2F3F5' },
     pinHash: '',
-    currency: 'USD',
-    // (opcional) saldo inicial si no hay conciliaciones anteriores
-    openingBankBalance: 0
+    currency: 'USD'
   },
   expensesDaily: [],
   incomesDaily: [],
@@ -750,27 +748,6 @@ function sumExpensesDailySplit(from, to){
 function sumPaymentsRange(from, to){ return state.payments.filter(p=>inRange(p.date,from,to)).reduce((a,b)=>a+Number(b.amount||0),0); }
 function sumPersonalRange(from, to){ return state.personal.filter(p=>inRange(p.date,from,to)).reduce((a,b)=>a+Number(b.amount||0),0); }
 
-/* ===== NUEVO: Helpers para saldo bancario corrido ===== */
-function monthRange(d){
-  const from = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0,10);
-  const to   = new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10);
-  return { from, to };
-}
-function monthNet(from, to){
-  const inc = sumRange(state.incomesDaily, from, to);
-  const exp = sumExpensesDailySplit(from, to).total;
-  const per = sumPersonalRange(from, to);
-  const pay = sumPaymentsRange(from, to);
-  return inc - (exp + per + pay);
-}
-function openingFromReconciliations(startISO){
-  const prev = state.reconciliations
-    .filter(r => r.date && r.date < startISO)
-    .sort((a,b)=> (a.date < b.date ? 1 : -1))[0];
-  if (prev) return Number(prev.bank || 0);
-  return Number(state.settings?.openingBankBalance || 0);
-}
-
 function renderReports(){
   const now=new Date(); const today=now.toISOString().slice(0,10);
   const monthStart=new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
@@ -807,134 +784,42 @@ function renderReports(){
   $('#rMonth') && ($('#rMonth').textContent = `${fmt(incMonth)} / ${fmt(expMonth)}`);
   $('#rYear')  && ($('#rYear').textContent  = `${fmt(incYear)} / ${fmt(expYear)}`);
 }
-
-/* ===== REEMPLAZADO: Home con saldo corrido ===== */
 function renderHome(){
-  const now = new Date();
-  const today = now.toISOString().slice(0,10);
-  // ⬇️ En vez de monthStart usamos el inicio del año para que sea corrido (YTD)
-  const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().slice(0,10);
+  const now=new Date(); 
+  const monthStart=new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10); 
+  const today=now.toISOString().slice(0,10);
+  const incMonth=sumRange(state.incomesDaily, monthStart, today);
+  const expSplit=sumExpensesDailySplit(monthStart, today); 
+  const perMonth=sumPersonalRange(monthStart,today); 
+  const payMonth=sumPaymentsRange(monthStart,today);
+  const totalExp=expSplit.total+perMonth+payMonth; 
+  const balance=incMonth-totalExp;
+  $('#kpiIncomesMonth') && ($('#kpiIncomesMonth').textContent=fmt(incMonth));
+  $('#kpiExpensesMonth') && ($('#kpiExpensesMonth').textContent=fmt(totalExp));
+  $('#kpiBalanceMonth') && ($('#kpiBalanceMonth').textContent=fmt(balance));
 
-  // Totales corridos del año
-  const incYTD = sumRange(state.incomesDaily, yearStart, today);
-  const expSplitYTD = sumExpensesDailySplit(yearStart, today);
-  const perYTD = sumPersonalRange(yearStart, today);
-  const payYTD = sumPaymentsRange(yearStart, today);
-  const totalExpYTD = expSplitYTD.total + perYTD + payYTD;
-  const balanceYTD = incYTD - totalExpYTD;
-
-  // KPIs (mantengo los mismos ids; solo cambia el cálculo a YTD)
-  $('#kpiIncomesMonth')  && ($('#kpiIncomesMonth').textContent  = fmt(incYTD));
-  $('#kpiExpensesMonth') && ($('#kpiExpensesMonth').textContent = fmt(totalExpYTD));
-  $('#kpiBalanceMonth')  && ($('#kpiBalanceMonth').textContent  = fmt(balanceYTD));
-
-  // === Gráfica: se mantiene mes a mes de los últimos 12 meses ===
-  const c = $('#chart12'); 
-  if(!c) return; 
-  const ctx = c.getContext('2d');
-  c.width = c.clientWidth; 
-  c.height = 180; 
-  ctx.clearRect(0,0,c.width,c.height);
-
+  const c=$('#chart12'); if(!c) return; const ctx=c.getContext('2d'); 
+  c.width=c.clientWidth; c.height=180; ctx.clearRect(0,0,c.width,c.height);
   const months=[], inc=[], exp=[];
   for(let i=11;i>=0;i--){
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    const from = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0,10);
-    const to   = new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10);
-
-    months.push(d.toLocaleDateString('es-ES', { month:'short' }));
-    const incM = sumRange(state.incomesDaily, from, to);
-    const expSplitM = sumExpensesDailySplit(from, to);
-    const perM = sumPersonalRange(from, to);
-    const payM = sumPaymentsRange(from, to);
-    exp.push(expSplitM.total + perM + payM);
-    inc.push(incM);
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const from=new Date(d.getFullYear(),d.getMonth(),1).toISOString().slice(0,10);
+    const to=new Date(d.getFullYear(),d.getMonth()+1,0).toISOString().slice(0,10);
+    months.push(d.toLocaleDateString('es-ES',{month:'short'}));
+    const incM=sumRange(state.incomesDaily, from, to);
+    const expSplitM=sumExpensesDailySplit(from, to);
+    const perM=sumPersonalRange(from,to), payM=sumPaymentsRange(from,to);
+    exp.push(expSplitM.total+perM+payM); inc.push(incM);
   }
-
-  const max = Math.max(...inc, ...exp, 1);
-  const barW = Math.floor((c.width - 40) / (months.length * 2));
-  months.forEach((m, idx)=>{
-    const x = idx*(barW*2) + 20;
-    const hI = Math.round((inc[idx]/max)*(c.height-30));
-    const hE = Math.round((exp[idx]/max)*(c.height-30));
-    ctx.fillStyle='#C7A24B'; ctx.fillRect(x,        c.height-10-hI, barW, hI);
-    ctx.fillStyle='#555';    ctx.fillRect(x+barW+4, c.height-10-hE, barW, hE);
-    ctx.fillStyle='#aaa';    ctx.font='12px system-ui'; ctx.fillText(m, x, c.height-2);
+  const max=Math.max(...inc,...exp,1); const barW=Math.floor((c.width-40)/(months.length*2));
+  months.forEach((m,idx)=>{
+    const x=idx*(barW*2)+20; 
+    const hI=Math.round((inc[idx]/max)*(c.height-30)); 
+    const hE=Math.round((exp[idx]/max)*(c.height-30));
+    ctx.fillStyle='#C7A24B'; ctx.fillRect(x,c.height-10-hI,barW,hI);
+    ctx.fillStyle='#555'; ctx.fillRect(x+barW+4,c.height-10-hE,barW,hE);
+    ctx.fillStyle='#aaa'; ctx.font='12px system-ui'; ctx.fillText(m,x,c.height-2);
   });
-}
-
-  // Saldo corrido que NO se resetea
-  const firstFromISO = months[0].from;
-  let running = openingFromReconciliations(firstFromISO);
-  const nets = months.map(m => monthNet(m.from, m.to));
-  const balanceSeries = nets.map(n => (running += n));
-
-  // Escalas
-  const barsMax = Math.max(...inc, ...exp, 1);
-  const lineMax = Math.max(...balanceSeries, 1);
-  const lineMin = Math.min(...balanceSeries, 0);
-  const overallMax = Math.max(barsMax, lineMax);
-  const overallMin = Math.min(0, lineMin);
-
-  const padBottom = 12, padTop = 10;
-  const chartH = c.height - (padBottom + padTop);
-  const chartW = c.width - 40;
-  const x0 = 20, y0 = c.height - padBottom;
-  const xStep = chartW / (labels.length);
-  const barW = Math.floor(xStep/2.2);
-
-  function yMap(v){
-    if (overallMax === overallMin) return y0 - chartH/2;
-    const t = (v - overallMin) / (overallMax - overallMin);
-    return y0 - t * chartH;
-  }
-
-  // Eje base
-  ctx.strokeStyle='#2b2b2b';
-  ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(x0-10, y0); ctx.lineTo(c.width-10, y0); ctx.stroke();
-
-  // Barras Ingresos / Gastos
-  labels.forEach((m,idx)=>{
-    const x = x0 + idx * xStep + 5;
-    const hI = Math.max(1, Math.round(((inc[idx]-overallMin)/(overallMax-overallMin))*chartH));
-    const hE = Math.max(1, Math.round(((exp[idx]-overallMin)/(overallMax-overallMin))*chartH));
-    ctx.fillStyle='#C7A24B';
-    ctx.fillRect(x, y0 - hI, barW, hI);
-    ctx.fillStyle='#555';
-    ctx.fillRect(x + barW + 4, y0 - hE, barW, hE);
-    ctx.fillStyle='#aaa'; 
-    ctx.font='12px system-ui'; 
-    ctx.fillText(m, x, c.height-2);
-  });
-
-  // Línea de saldo corrido
-  ctx.beginPath();
-  balanceSeries.forEach((v,i)=>{
-    const x = x0 + i * xStep + barW; // centrado
-    const y = yMap(v);
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.strokeStyle='#C7A24B';
-  ctx.lineWidth=2;
-  ctx.setLineDash([4,2]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Puntos
-  ctx.fillStyle='#C7A24B';
-  balanceSeries.forEach((v,i)=>{
-    const x = x0 + i * xStep + barW;
-    const y = yMap(v);
-    ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
-  });
-
-  // Leyenda
-  ctx.fillStyle='#ccc';
-  ctx.font='12px system-ui';
-  ctx.fillText('Ingresos',  x0, padTop);
-  ctx.fillText('Gastos',    x0+70, padTop);
-  ctx.fillText('Saldo corrido', x0+130, padTop);
 }
 
 /* ===================== Exportar/Importar JSON ===================== */
@@ -1364,6 +1249,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
 
       if ($("matchCount")) $("matchCount").textContent = String(matches);
       if ($("unmatchedCount")) $("unmatchedCount").textContent = String(noMatch);
+      // Si ya tienes este total funcionando, esto no molesta; si no, lo llena:
       if ($("reconImpTotal") && $("reconImpTotal").textContent.trim() === "—") {
         $("reconImpTotal").textContent = currencyFmt(totalCsv);
       }
@@ -1372,16 +1258,19 @@ document.addEventListener('DOMContentLoaded', wireAll);
     }
   }
 
+  // Llamar después de “Previsualizar” y “Matching”
   const btnPrev = $("reconImportPreview");
   const btnMatch = $("reconImportMatch");
   if (btnPrev) btnPrev.addEventListener("click", () => setTimeout(updateReconMatchSummaryFromTable, 0));
   if (btnMatch) btnMatch.addEventListener("click", () => setTimeout(updateReconMatchSummaryFromTable, 0));
 
+  // Observar cambios en la tabla (agregar/eliminar filas)
   const reconTbody = document.querySelector("#reconImportTable tbody");
   if (reconTbody) {
     new MutationObserver(() => setTimeout(updateReconMatchSummaryFromTable, 0))
       .observe(reconTbody, { childList: true });
   }
+  // Intento inicial por si llega con datos
   document.addEventListener("DOMContentLoaded", () => setTimeout(updateReconMatchSummaryFromTable, 0));
 
 
@@ -1391,6 +1280,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
       const tbody = document.querySelector("#paymentsTable tbody");
       if (!tbody) return;
 
+      // Columnas en tu HTML: Fecha | Empleado | Categoría | Neto | Estado | Acciones
       let total = 0, paid = 0;
 
       [...tbody.rows].forEach((row) => {
@@ -1412,13 +1302,20 @@ document.addEventListener('DOMContentLoaded', wireAll);
     }
   }
 
+  // Recalcular al cargar
   document.addEventListener("DOMContentLoaded", () => setTimeout(updatePayrollSummaryFromTable, 0));
 
+  // Observar cambios en tabla de nómina (cuando agregas/eliminas/editar filas)
   const payTbody = document.querySelector("#paymentsTable tbody");
   if (payTbody) {
     new MutationObserver(() => setTimeout(updatePayrollSummaryFromTable, 0))
       .observe(payTbody, { childList: true, subtree: true, characterData: true });
   }
+
+  // Si tu código ya tiene funciones propias que tocan Nómina, puedes llamar manualmente:
+  // window.updatePayrollSummaryFromTable = updatePayrollSummaryFromTable;
+  // y luego tras guardar/eliminar: updatePayrollSummaryFromTable();
+
 })();
 // ===== Cerrar sesión y volver al login PIN =====
 (function(){
@@ -1428,9 +1325,11 @@ document.addEventListener('DOMContentLoaded', wireAll);
 
   logoutBtn.addEventListener("click", () => {
     try {
+      // Borra PIN temporal o estado de sesión
       localStorage.removeItem("pinVerified");
       sessionStorage.clear();
 
+      // Muestra nuevamente el login y oculta todo el resto
       const loginOverlay = document.getElementById("loginOverlay");
       if (loginOverlay) loginOverlay.style.display = "flex";
 
@@ -1451,37 +1350,53 @@ document.addEventListener('DOMContentLoaded', wireAll);
 (function () {
   const $ = (s) => document.querySelector(s);
 
+  // Utilidad: mostrar overlay de login y ocultar todo lo demás
   function showLoginOverlay() {
-    const login = $("#login");
+    // 1) Mostrar login
+    const login = $("#login"); // tu overlay tiene id="login"
     if (login) {
       login.classList.add("visible");
       login.setAttribute("aria-hidden", "false");
     }
+
+    // 2) Ocultar TODAS las vistas (SPA)
     document.querySelectorAll(".view").forEach((sec) => {
       if (sec.id !== "login") sec.classList.remove("visible");
     });
+
+    // 3) Quitar estado "active" del menú
     document.querySelectorAll(".nav-btn.active").forEach((b) => b.classList.remove("active"));
+
+    // 4) Limpiar estado de sesión PIN
     try {
       localStorage.removeItem("pinVerified");
       sessionStorage.clear();
     } catch (_) {}
+
+    // 5) Enfocar el input del PIN si existe
     const pin = $("#loginPIN");
     if (pin) setTimeout(() => pin.focus(), 50);
   }
 
+  // Manejar click en el botón Salir
   const logoutBtn = $("#logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
+      // (Opcional) Si tienes Firebase Auth y quieres cerrar la sesión de Google también:
       try {
+        // Usa tu instancia si la tienes accesible globalmente
         if (window.auth && typeof window.signOut === "function") {
           await window.signOut(window.auth);
         }
       } catch (e) {
         console.warn("signOut Firebase opcional falló:", e);
       }
+
       showLoginOverlay();
     });
   }
+
+  // Expone por si quieres llamarlo desde otros lugares
   window.showLoginOverlay = showLoginOverlay;
 })();
 /* =========================================================
@@ -1491,27 +1406,36 @@ document.addEventListener('DOMContentLoaded', wireAll);
 (function () {
   const $ = (id) => document.getElementById(id);
 
+  // Normaliza y detecta "match" de forma robusta
   function isMatch(text) {
     const t = String(text || "")
       .toLowerCase()
       .replace(/\s+/g, " ")
       .trim();
 
+    // Señales positivas claras
     const positives = [
       "✔", "✓", "match", "coincide", "coincidencia", "encontrado",
       "found", "ok", "true", "sí", "si"
     ];
 
+    // Señales negativas claras
     const negatives = [
       "✖", "x", "no coincide", "sin coincidencia", "no encontrado",
       "no match", "no", "false", "pendiente", "-"
     ];
 
+    // Si contiene frase negativa explícita, es NO-MATCH
     if (negatives.some(n => t.includes(n))) return false;
+
+    // Si contiene positiva (y no hay "no " antes), es MATCH
     if (positives.some(p => t.includes(p))) return true;
+
+    // Si viene como data-flag (por clases) – opcional
     return false;
   }
 
+  // Suma segura de números del CSV importado
   function safeNum(v) {
     const n = typeof v === "number"
       ? v
@@ -1519,6 +1443,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
     return isNaN(n) ? 0 : n;
   }
 
+  // Recalcula desde la tabla de importación (previsualización/matching)
   function updateReconMatchSummaryFromTable() {
     const tbody = document.querySelector("#reconImportTable tbody");
     if (!tbody) return;
@@ -1528,6 +1453,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
     let totalCsv = 0;
 
     [...tbody.rows].forEach((row) => {
+      // Columnas: 0 Fecha | 1 Ref | 2 Descripción | 3 Monto | 4 Match | 5 Detalle
       const monto = safeNum(row.cells[3]?.textContent || "0");
       const matchText = row.cells[4]?.textContent || row.cells[4]?.innerText || "";
 
@@ -1536,6 +1462,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
       if (isMatch(matchText)) {
         matches++;
       } else {
+        // Si la celda está vacía o tiene negativo -> contar como NO ENCONTRADA
         noMatch++;
       }
     });
@@ -1546,6 +1473,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
       ? window.fmt(totalCsv)
       : totalCsv.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+    // (Opcional) Colorear tarjetas según estado
     colorMatchCards(matches, noMatch);
   }
 
@@ -1556,6 +1484,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
     if (bad) bad.style.borderColor = noMatch > 0 ? "rgba(255,99,71,0.8)" : "rgba(199,162,75,0.45)";
   }
 
+  // Observa cambios en la tabla y también reacciona a los botones
   function wireReconObservers() {
     const tbody = document.querySelector("#reconImportTable tbody");
     if (tbody) {
@@ -1568,11 +1497,13 @@ document.addEventListener('DOMContentLoaded', wireAll);
     if (btnMatch) btnMatch.addEventListener("click", () => setTimeout(updateReconMatchSummaryFromTable, 0));
   }
 
+  // Inicial
   document.addEventListener("DOMContentLoaded", () => {
     wireReconObservers();
     setTimeout(updateReconMatchSummaryFromTable, 0);
   });
 
+  // Exponer por si quieres llamarlo manualmente desde tu propio flujo
   window.updateReconMatchSummaryFromTable = updateReconMatchSummaryFromTable;
 })();
 /* =========================================================
@@ -1582,8 +1513,10 @@ document.addEventListener('DOMContentLoaded', wireAll);
 (function () {
   const $ = (id) => document.getElementById(id);
 
+  // --- Utilidad segura para leer value ---
   const val = (el) => (el && el.value != null ? el.value : "");
 
+  // --- MIGRACIÓN SUAVE: asegura que cada item tenga 'ref' ---
   function ensureRefField() {
     try {
       const data = JSON.parse(localStorage.getItem("finanzasData") || "{}");
@@ -1598,10 +1531,13 @@ document.addEventListener('DOMContentLoaded', wireAll);
   }
   ensureRefField();
 
+  // --- HOOK formularios para inyectar 'ref' en el objeto que ya guardas ---
+  // Si tu código crea el objeto manualmente, este hook no molesta;
+  // si tomas los values al vuelo, también funciona.
   const expForm = $("expenseForm");
   if (expForm) {
     expForm.addEventListener("submit", () => {
-      expForm.dataset._ref = val($("expRef"));
+      expForm.dataset._ref = val($("expRef")); // stash por si tu save lee del form
     }, { capture: true });
   }
   const incForm = $("incomeForm");
@@ -1611,12 +1547,15 @@ document.addEventListener('DOMContentLoaded', wireAll);
     }, { capture: true });
   }
 
+  // --- API pequeña para usar desde tu guardado si quieres: window.getFormRef('expense'|'income') ---
   window.getFormRef = (type) => {
     if (type === "expense") return $("expRef") ? $("expRef").value : (expForm?.dataset?._ref || "");
     if (type === "income")  return $("incRef") ? $("incRef").value : (incForm?.dataset?._ref || "");
     return "";
   };
 
+  // --- RENDER: inserta la columna Ref si tu generador de filas no la imprime todavía ---
+  // Gastos: columnas esperadas -> Fecha | Categoría | Descripción | Método | Ref | Monto | Nota | Acciones
   window.renderExpenseRowWithRef = function (e, idx) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -1635,6 +1574,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
     return tr;
   };
 
+  // Ingresos: columnas -> Fecha | Cliente | Método | Ref | Monto | Acciones
   window.renderIncomeRowWithRef = function (i, idx) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -1650,6 +1590,16 @@ document.addEventListener('DOMContentLoaded', wireAll);
     `;
     return tr;
   };
+
+  // --- Ayuda: si ya tienes funciones que pintan las tablas, cambia la creación de filas por las de arriba ---
+  // Ejemplo:
+  //   tbody.appendChild(window.renderExpenseRowWithRef(expense, idx));
+  //   tbody.appendChild(window.renderIncomeRowWithRef(income, idx));
+
+  // --- EXTRA: si usas objeto al guardar, añade la propiedad 'ref' ---
+  // Ejemplo para tu función de guardado (ilustrativo):
+  //   const obj = { date, category, description, method, amount, note, ref: window.getFormRef('expense') };
+  //   const obj = { date, client, method, amount, ref: window.getFormRef('income') };
 })();
 /* ===== FIX NAV: alternar vistas SPA con .visible ===== */
 (function () {
@@ -1657,13 +1607,18 @@ document.addEventListener('DOMContentLoaded', wireAll);
   const byId = id => document.getElementById(id);
   function showView(id) {
     views.forEach(v => v.classList.toggle('visible', v.id === id));
+    // marca activo en menú
     document.querySelectorAll('.nav-btn[data-target]').forEach(b => {
       b.classList.toggle('active', b.dataset.target === id);
     });
   }
+
+  // Click en menú lateral
   document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
     btn.addEventListener('click', () => showView(btn.dataset.target));
   });
+
+  // Inicial: si hay uno activo, úsalo; si no, 'home' (el login es aparte)
   const active = document.querySelector('.nav-btn.active[data-target]');
   showView(active ? active.dataset.target : 'home');
 })();
@@ -1673,13 +1628,17 @@ document.addEventListener('DOMContentLoaded', wireAll);
     document.querySelectorAll('.view').forEach(v =>
       v.classList.toggle('visible', v.id === id)
     );
+    // resalta botón activo
     document.querySelectorAll('.nav-btn[data-target]').forEach(b =>
       b.classList.toggle('active', b.dataset.target === id)
     );
   };
+
   document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
     btn.addEventListener('click', () => showView(btn.dataset.target));
   });
+
+  // inicia con la primera vista si no hay otra activa
   const first = document.querySelector('.view');
   if (first) showView(first.id);
 })();
@@ -1702,13 +1661,18 @@ document.addEventListener('DOMContentLoaded', wireAll);
         v.setAttribute('aria-hidden', 'true');
       }
     }
+    // marcar activo en menú
     $$('.nav-btn[data-target]').forEach(b => b.classList.toggle('active', b.dataset.target === id));
   }
 
+  // Enlazar menú lateral
   $$('.nav-btn[data-target]').forEach(btn => {
     btn.addEventListener('click', () => showView(btn.dataset.target));
   });
 
+  // Vista inicial segura:
+  // - si login está visible, respetarlo
+  // - si no, usar el botón activo o 'home'
   window.addEventListener('DOMContentLoaded', () => {
     const login = byId('login');
     if (login && login.classList.contains('visible')) {
@@ -1719,15 +1683,19 @@ document.addEventListener('DOMContentLoaded', wireAll);
     }
   });
 
+  // Enforcer: si por estilos o scripts externos se muestran varias, corrige
   function enforce() {
     const visible = $$('.view.visible');
     if (visible.length > 1) {
+      // deja visible solo la primera (o login si está)
       const keep = byId('login')?.classList.contains('visible') ? byId('login') : visible[0];
       $$('.view').forEach(v => v.classList.toggle('visible', v === keep));
     }
   }
+  // Corrección periódica suave (no afecta performance)
   setInterval(enforce, 500);
 
+  // Exponer por si lo quieres usar en otros lados
   window.showView = showView;
 })();
 /* =========================================================
@@ -1737,19 +1705,24 @@ document.addEventListener('DOMContentLoaded', wireAll);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
   const byId = (id) => document.getElementById(id);
 
+  // Fuerza el estado "solo una vista visible"
   function showView(id) {
     const views = $$('.view');
     for (const v of views) {
-      v.classList.toggle('visible', v.id === id);
-      v.setAttribute('aria-hidden', v.id === id ? 'false' : 'true');
+      const active = v.id === id;
+      v.classList.toggle('visible', active);
+      v.setAttribute('aria-hidden', active ? 'false' : 'true');
     }
+    // marcar activo en menú lateral
     $$('.nav-btn[data-target]').forEach(b => {
       b.classList.toggle('active', b.dataset.target === id);
     });
   }
 
+  // Si existe overlay de login, úsalo como vista
   function goLogin() { showView('login'); }
 
+  // Enlazar menú lateral (data-target="idDeLaVista")
   $$('.nav-btn[data-target]').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.target;
@@ -1757,6 +1730,7 @@ document.addEventListener('DOMContentLoaded', wireAll);
     });
   });
 
+  // Inicial robusto: si login está visible, respetarlo; sino, ir a 'home' o al primer botón activo
   window.addEventListener('DOMContentLoaded', () => {
     const login = byId('login');
     if (login && login.classList.contains('visible')) {
@@ -1767,8 +1741,10 @@ document.addEventListener('DOMContentLoaded', wireAll);
     }
   });
 
+  // Enforcer periódico por si otro script/estilo ensucia el estado
   function enforceSPA() {
     const views = $$('.view');
+    // si hay más de una visible, deja solo la primera (o el login si está)
     const visibles = views.filter(v => v.classList.contains('visible'));
     if (visibles.length > 1) {
       const keep = byId('login')?.classList.contains('visible') ? byId('login') : visibles[0];
@@ -1777,5 +1753,6 @@ document.addEventListener('DOMContentLoaded', wireAll);
   }
   setInterval(enforceSPA, 500);
 
+  // Exponer por si quieres llamar desde otros flujos
   window.showView = showView;
 })();
