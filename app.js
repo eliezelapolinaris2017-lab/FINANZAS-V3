@@ -788,6 +788,8 @@ function renderHome(){
   const now=new Date(); 
   const monthStart=new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10); 
   const today=now.toISOString().slice(0,10);
+
+  // KPIs del mes (se quedan igual)
   const incMonth=sumRange(state.incomesDaily, monthStart, today);
   const expSplit=sumExpensesDailySplit(monthStart, today); 
   const perMonth=sumPersonalRange(monthStart,today); 
@@ -798,26 +800,47 @@ function renderHome(){
   $('#kpiExpensesMonth') && ($('#kpiExpensesMonth').textContent=fmt(totalExp));
   $('#kpiBalanceMonth') && ($('#kpiBalanceMonth').textContent=fmt(balance));
 
+  // ===== Gráfica 12M ACUMULADA (YTD) para que no se vaya a cero al cambiar de mes =====
   const c=$('#chart12'); if(!c) return; const ctx=c.getContext('2d'); 
   c.width=c.clientWidth; c.height=180; ctx.clearRect(0,0,c.width,c.height);
-  const months=[], inc=[], exp=[];
+
+  const months=[], incAcc=[], expAcc=[];
+  let accInc=0, accExp=0;
+
   for(let i=11;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    const from=new Date(d.getFullYear(),d.getMonth(),1).toISOString().slice(0,10);
-    const to=new Date(d.getFullYear(),d.getMonth()+1,0).toISOString().slice(0,10);
+
+    // Rango mensual (primer y último día del mes i)
+    const fromM=new Date(d.getFullYear(),d.getMonth(),1).toISOString().slice(0,10);
+    const toM  =new Date(d.getFullYear(),d.getMonth()+1,0).toISOString().slice(0,10);
+
+    // Totales SOLO del mes i
+    const incM=sumRange(state.incomesDaily, fromM, toM);
+    const expSplitM=sumExpensesDailySplit(fromM, toM);
+    const perM=sumPersonalRange(fromM,toM), payM=sumPaymentsRange(fromM,toM);
+    const expM=expSplitM.total+perM+payM;
+
+    // Acumulados (YTD) hasta fin de ese mes
+    accInc += incM;
+    accExp += expM;
+
     months.push(d.toLocaleDateString('es-ES',{month:'short'}));
-    const incM=sumRange(state.incomesDaily, from, to);
-    const expSplitM=sumExpensesDailySplit(from, to);
-    const perM=sumPersonalRange(from,to), payM=sumPaymentsRange(from,to);
-    exp.push(expSplitM.total+perM+payM); inc.push(incM);
+    incAcc.push(accInc);
+    expAcc.push(accExp);
   }
-  const max=Math.max(...inc,...exp,1); const barW=Math.floor((c.width-40)/(months.length*2));
+
+  const max=Math.max(...incAcc,...expAcc,1);
+  const barW=Math.floor((c.width-40)/(months.length*2));
+
   months.forEach((m,idx)=>{
     const x=idx*(barW*2)+20; 
-    const hI=Math.round((inc[idx]/max)*(c.height-30)); 
-    const hE=Math.round((exp[idx]/max)*(c.height-30));
+    const hI=Math.round((incAcc[idx]/max)*(c.height-30)); 
+    const hE=Math.round((expAcc[idx]/max)*(c.height-30));
+    // Ingresos acumulados
     ctx.fillStyle='#C7A24B'; ctx.fillRect(x,c.height-10-hI,barW,hI);
+    // Egresos acumulados
     ctx.fillStyle='#555'; ctx.fillRect(x+barW+4,c.height-10-hE,barW,hE);
+    // Etiquetas de mes
     ctx.fillStyle='#aaa'; ctx.font='12px system-ui'; ctx.fillText(m,x,c.height-2);
   });
 }
