@@ -810,40 +810,58 @@ function renderReports(){
 
 /* ===== REEMPLAZADO: Home con saldo corrido ===== */
 function renderHome(){
-  const now=new Date(); 
-  const monthStart=new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10); 
-  const today=now.toISOString().slice(0,10);
+  const now = new Date();
+  const today = now.toISOString().slice(0,10);
+  // ⬇️ En vez de monthStart usamos el inicio del año para que sea corrido (YTD)
+  const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().slice(0,10);
 
-  // KPIs del mes (igual que antes)
-  const incMonth=sumRange(state.incomesDaily, monthStart, today);
-  const expSplit=sumExpensesDailySplit(monthStart, today); 
-  const perMonth=sumPersonalRange(monthStart,today); 
-  const payMonth=sumPaymentsRange(monthStart,today);
-  const totalExp=expSplit.total+perMonth+payMonth; 
-  const balance=incMonth-totalExp;
-  $('#kpiIncomesMonth') && ($('#kpiIncomesMonth').textContent=fmt(incMonth));
-  $('#kpiExpensesMonth') && ($('#kpiExpensesMonth').textContent=fmt(totalExp));
-  $('#kpiBalanceMonth') && ($('#kpiBalanceMonth').textContent=fmt(balance));
+  // Totales corridos del año
+  const incYTD = sumRange(state.incomesDaily, yearStart, today);
+  const expSplitYTD = sumExpensesDailySplit(yearStart, today);
+  const perYTD = sumPersonalRange(yearStart, today);
+  const payYTD = sumPaymentsRange(yearStart, today);
+  const totalExpYTD = expSplitYTD.total + perYTD + payYTD;
+  const balanceYTD = incYTD - totalExpYTD;
 
-  const c=$('#chart12'); if(!c) return; 
-  const ctx=c.getContext('2d'); 
-  c.width=c.clientWidth; 
-  c.height=180; 
+  // KPIs (mantengo los mismos ids; solo cambia el cálculo a YTD)
+  $('#kpiIncomesMonth')  && ($('#kpiIncomesMonth').textContent  = fmt(incYTD));
+  $('#kpiExpensesMonth') && ($('#kpiExpensesMonth').textContent = fmt(totalExpYTD));
+  $('#kpiBalanceMonth')  && ($('#kpiBalanceMonth').textContent  = fmt(balanceYTD));
+
+  // === Gráfica: se mantiene mes a mes de los últimos 12 meses ===
+  const c = $('#chart12'); 
+  if(!c) return; 
+  const ctx = c.getContext('2d');
+  c.width = c.clientWidth; 
+  c.height = 180; 
   ctx.clearRect(0,0,c.width,c.height);
 
-  // 12 meses (de antiguo -> actual)
-  const labels=[], inc=[], exp=[], months=[];
+  const months=[], inc=[], exp=[];
   for(let i=11;i>=0;i--){
-    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    const {from,to}=monthRange(d);
-    labels.push(d.toLocaleDateString('es-ES',{month:'short'}));
-    const incM=sumRange(state.incomesDaily, from, to);
-    const expSplitM=sumExpensesDailySplit(from, to);
-    const perM=sumPersonalRange(from,to), payM=sumPaymentsRange(from,to);
-    exp.push(expSplitM.total+perM+payM); 
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const from = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0,10);
+    const to   = new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10);
+
+    months.push(d.toLocaleDateString('es-ES', { month:'short' }));
+    const incM = sumRange(state.incomesDaily, from, to);
+    const expSplitM = sumExpensesDailySplit(from, to);
+    const perM = sumPersonalRange(from, to);
+    const payM = sumPaymentsRange(from, to);
+    exp.push(expSplitM.total + perM + payM);
     inc.push(incM);
-    months.push({from,to});
   }
+
+  const max = Math.max(...inc, ...exp, 1);
+  const barW = Math.floor((c.width - 40) / (months.length * 2));
+  months.forEach((m, idx)=>{
+    const x = idx*(barW*2) + 20;
+    const hI = Math.round((inc[idx]/max)*(c.height-30));
+    const hE = Math.round((exp[idx]/max)*(c.height-30));
+    ctx.fillStyle='#C7A24B'; ctx.fillRect(x,        c.height-10-hI, barW, hI);
+    ctx.fillStyle='#555';    ctx.fillRect(x+barW+4, c.height-10-hE, barW, hE);
+    ctx.fillStyle='#aaa';    ctx.font='12px system-ui'; ctx.fillText(m, x, c.height-2);
+  });
+}
 
   // Saldo corrido que NO se resetea
   const firstFromISO = months[0].from;
