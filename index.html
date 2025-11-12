@@ -299,35 +299,22 @@
       </div>
     </section>
 
-    <!-- ============ EXPORTACIONES EN PDF (con rango de fechas) ============ -->
-<section id="exports" class="view" data-title="Exportaciones en PDF">
-<div class="card">
-<div class="card-title">Generar PDF</div>
-
-<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
-<label>Desde <input type="date" id="expFrom" /></label>
-<label>Hasta <input type="date" id="expTo" /></label>
-<label>Empleado (opcional) <input type="text" id="expEmployee" placeholder="Nombre"/></label>
-<button id="expPreview" class="btn-outline" type="button">Vista previa (tabla)</button>
-</div>
-
-<div class="grid3">
-<!-- Botones normales: usan el rango de fechas arriba -->
-<button class="btn" data-print-view="expenses">Gastos Diarios (rango)</button>
-<button class="btn" data-print-view="incomes">Ingresos (rango)</button>
-<button class="btn" data-print-view="payments">Pago de Nómina (rango)</button>
-<button class="btn" data-print-view="personal">Gastos Personales (rango)</button>
-<button class="btn" data-print-view="invoices">Facturas (lista) (rango)</button>
-<button class="btn" data-print-view="quotes">Cotizaciones (lista) (rango)</button>
-<button class="btn" data-print-view="ordinary">Gastos Ordinarios (rango)</button>
-<button class="btn" data-print-view="reconciliations">Conciliación Bancaria (rango)</button>
-</div>
-
-<p class="muted" style="margin-top:10px">
-Usa las fechas para exportar solo los registros dentro del rango. Si dejas las fechas vacías exporta todo.
-</p>
-</div>
-</section>
+    <!-- ============ EXPORTACIONES EN PDF ============ -->
+    <section id="exports" class="view" data-title="Exportaciones en PDF">
+      <div class="card">
+        <div class="card-title">Generar PDF</div>
+        <div class="grid3">
+          <button class="btn" data-print-view="expenses">Gastos Diarios</button>
+          <button class="btn" data-print-view="incomes">Ingresos</button>
+          <button class="btn" data-print-view="payments">Pago de Nómina</button>
+          <button class="btn" data-print-view="personal">Gastos Personales</button>
+          <button class="btn" data-print-view="invoices">Facturas (lista)</button>
+          <button class="btn" data-print-view="quotes">Cotizaciones (lista)</button>
+          <button class="btn" data-print-view="ordinary">Gastos Ordinarios</button>
+          <button class="btn" data-print-view="reconciliations">Conciliación Bancaria</button>
+        </div>
+      </div>
+    </section>
 
     <!-- ============ GASTOS ORDINARIOS ============ -->
     <section id="ordinary" class="view" data-title="Gastos Ordinarios">
