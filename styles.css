@@ -695,3 +695,26 @@ body.locked {
     display: none !important;
   }
 }
+/* =========================================================
+   BOTONES DEL PANEL RÁPIDO – ESTILO DORADO LLAMATIVO
+   ========================================================= */
+
+.mq-actions button{
+  flex:1;
+  border-radius:8px;
+  border:1px solid rgba(255,227,150,0.35);
+  background: linear-gradient(180deg, #caa952, #b58c2f);
+  color:#101214;
+  font-size:.85rem;
+  padding:7px 6px;
+  cursor:pointer;
+  font-weight:600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.45);
+  transition: all .18s ease;
+}
+
+.mq-actions button:hover{
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
