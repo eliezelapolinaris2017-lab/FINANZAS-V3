@@ -766,6 +766,27 @@ body.locked {
     flex-direction: column;
   }
 }
+/* ===== Layout del login: hero arriba, caja abajo, ambos centrados ===== */
+#login.fullscreen-login.view.visible{
+  display: flex !important;
+  flex-direction: column;      /* <--- CLAVE: uno encima del otro */
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* Asegurar que el hero esté centrado */
+#login .login-hero{
+  text-align: center;
+  max-width: 420px;
+}
+
+/* La caja del login con ancho controlado */
+#login .login-wrap{
+  max-width: 560px;
+  width: 100%;
+}
+
 
 
 
