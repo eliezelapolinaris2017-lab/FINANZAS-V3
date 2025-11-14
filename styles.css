@@ -615,3 +615,131 @@ main .view.visible {
 /* Seguridad: si algún contenedor fuerza display en secciones, no lo permitas */
 section.view, div.view { display:none !important; }
 section.view.visible, div.view.visible { display:block !important; }
+/* =========================================================
+   PANEL MÓVIL – Nexus Finance
+   ========================================================= */
+
+/* Por defecto, el panel móvil está oculto (solo saldrá en pantallas pequeñas) */
+.mobile-quick-panel {
+  display: none;
+}
+
+/* Wrapper de escritorio (ya existe en el HTML) */
+.desktop-wrapper {
+  /* no tocamos el layout de escritorio por ahora */
+}
+
+/* ===== Estilos específicos para MÓVIL ===== */
+@media (max-width: 768px) {
+  /* Ajuste pequeño de body en móviles */
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font);
+  }
+
+  /* Mostrar el panel rápido en móvil */
+  .mobile-quick-panel {
+    display: block;
+    padding: 16px;
+    background: linear-gradient(135deg, #020617, #0b0d10);
+    color: #f9fafb;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+
+  .mq-header {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .mq-subtitle {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-bottom: 12px;
+  }
+
+  .mq-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .mq-card {
+    background: rgba(15,23,42,0.9);
+    border-radius: 12px;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid rgba(148,163,184,0.3);
+  }
+
+  .mq-card span {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+  }
+
+  .mq-card strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .mq-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .mq-actions button {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #22c55e;
+    color: #022c22;
+    box-shadow: 0 6px 15px rgba(34, 197, 94, 0.35);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .mq-actions button:nth-child(2) {
+    background: #f97316;
+    color: #111827;
+    box-shadow: 0 6px 15px rgba(249, 115, 22, 0.4);
+  }
+
+  .mq-actions button:nth-child(3) {
+    background: #38bdf8;
+    color: #0f172a;
+    box-shadow: 0 6px 15px rgba(56, 189, 248, 0.4);
+  }
+
+  .mq-actions button:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  /* Pequeño ajuste para que el contenido de abajo no se pegue al panel */
+  .desktop-wrapper {
+    padding-top: 8px;
+  }
+}
+
+/* En pantallas grandes, el panel se oculta */
+@media (min-width: 769px) {
+  .mobile-quick-panel {
+    display: none;
+  }
+}
+
