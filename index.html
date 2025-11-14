@@ -59,11 +59,16 @@
     </div>
 
     <div class="mq-actions">
-      <button onclick="openQuickForm('ingreso')">Nuevo ingreso</button>
-      <button onclick="openQuickForm('gasto')">Nuevo gasto</button>
-      <button onclick="openQuickForm('factura')">Nueva factura</button>
-    </div>
-  </div>
+  <button onclick="openQuickForm('ingreso')">Nuevo ingreso</button>
+  <button onclick="openQuickForm('gasto')">Nuevo gasto</button>
+  <button onclick="openQuickForm('factura')">Nueva factura</button>
+</div>
+
+<!-- Botón extra solo para ir a Configuración desde el panel rápido -->
+<div class="mq-settings-action">
+  <button onclick="openQuickForm('settings')">⚙ Configuración</button>
+</div>
+
   <!-- ============== FIN PANEL MÓVIL ================= -->
 
   <!-- ================== WRAPPER ESCRITORIO ================== -->
@@ -700,42 +705,44 @@
     // Cambia de vista usando el menú lateral (SPA)
     // y en móvil muestra la app completa (oculta el panel rápido)
     function openQuickForm(tipo) {
-      let targetId = null;
+  let targetId = null;
 
-      if (tipo === 'ingreso') {
-        targetId = 'incomes';
-      } else if (tipo === 'gasto') {
-        targetId = 'expenses';
-      } else if (tipo === 'factura') {
-        targetId = 'invoices';
-      }
+  if (tipo === 'ingreso') {
+    targetId = 'incomes';
+  } else if (tipo === 'gasto') {
+    targetId = 'expenses';
+  } else if (tipo === 'factura') {
+    targetId = 'invoices';
+  } else if (tipo === 'settings') {
+    targetId = 'settings';
+  }
 
-      if (!targetId) return;
+  if (!targetId) return;
 
-      const navBtn = document.querySelector('.nav-btn[data-target="' + targetId + '"]');
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const navBtn = document.querySelector('.nav-btn[data-target="' + targetId + '"]');
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
-      if (isMobile) {
-        // Mostrar la app y ocultar el panel rápido
-        document.body.classList.add('show-mobile-view');
+  if (isMobile) {
+    // Mostrar la app completa y ocultar el panel rápido
+    document.body.classList.add('show-mobile-view');
 
-        // Dejar que app.js maneje el cambio de vista
-        if (navBtn) {
-          navBtn.click();
-        }
-
-        // Asegurar que la sección correcta quede visible
-        const section = document.getElementById(targetId);
-        if (section) {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      } else {
-        // Escritorio: solo cambiar de vista dentro de la SPA
-        if (navBtn) {
-          navBtn.click();
-        }
-      }
+    // Dejar que app.js maneje las vistas
+    if (navBtn) {
+      navBtn.click();
     }
+
+    const section = document.getElementById(targetId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  } else {
+    // Escritorio: solo cambiar de vista
+    if (navBtn) {
+      navBtn.click();
+    }
+  }
+}
+
 
     // Copia los KPIs del dashboard al panel móvil
     function syncMobileQuickPanel() {
