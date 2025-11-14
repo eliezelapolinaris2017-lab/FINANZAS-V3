@@ -1014,6 +1014,24 @@ body.locked {
     font-size: 0.75rem;
   }
 }
+/* ===== MODO MÓVIL: ocultar menú principal de la web app ===== */
+@media (max-width: 768px){
+
+  /* Oculta completamente la barra lateral en móviles */
+  .sidebar{
+    display: none !important;
+  }
+
+  /* Que el main no reserve espacio para la sidebar */
+  .main{
+    margin-left: 0 !important;
+  }
+
+  /* Oculta el botón hamburguesa de menú en la topbar */
+  #menuToggle{
+    display: none !important;
+  }
+}
 
 
 
