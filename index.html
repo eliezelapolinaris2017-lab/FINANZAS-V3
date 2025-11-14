@@ -8,6 +8,63 @@
   <link rel="stylesheet" href="styles.css?v=17"/>
 </head>
 <body>
+  <body>
+
+  <!-- PANEL MÓVIL NUEVO -->
+  <div class="mobile-quick-panel">
+    <div class="mq-header">Nexus Finance</div>
+    <div class="mq-subtitle">Panel rápido (modo móvil)</div>
+
+    <div class="mq-summary">
+      <div class="mq-card">
+        <span>Ingresos hoy</span>
+        <strong id="mq-income-today">$0.00</strong>
+      </div>
+      <div class="mq-card">
+        <span>Gastos hoy</span>
+        <strong id="mq-expenses-today">$0.00</strong>
+      </div>
+      <div class="mq-card">
+        <span>Balance mes</span>
+        <strong id="mq-balance-month">$0.00</strong>
+      </div>
+    </div>
+
+    <div class="mq-actions">
+      <button onclick="openQuickForm('ingreso')">Nuevo ingreso</button>
+      <button onclick="openQuickForm('gasto')">Nuevo gasto</button>
+      <button onclick="openQuickForm('factura')">Nueva factura</button>
+    </div>
+  </div>
+  <!-- FIN PANEL MÓVIL -->
+
+  <!-- TODO TU CONTENIDO ACTUAL ENVUELTO AQUÍ -->
+  <div class="desktop-wrapper">
+    <!-- pega aquí todo lo que ya tienes (dashboard, formularios, etc.) -->
+    <!-- EJEMPLO -->
+    <!-- <div id="app"> ... </div> -->
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Función simple para scroll a secciones (luego la conectamos a tus IDs reales)
+    function openQuickForm(tipo) {
+      if (tipo === 'ingreso') {
+        const el = document.getElementById('section-ingresos');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+      if (tipo === 'gasto') {
+        const el = document.getElementById('section-gastos');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+      if (tipo === 'factura') {
+        const el = document.getElementById('section-facturas');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+
 
   <!-- ============== LOGIN (pantalla completa centrado) ============== -->
   <div id="login" class="fullscreen-login view visible" aria-hidden="false">
