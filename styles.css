@@ -786,6 +786,46 @@ body.locked {
   max-width: 560px;
   width: 100%;
 }
+/* ===== RESPONSIVE: tablas en móvil ===== */
+@media (max-width: 768px){
+
+  /* Evitar scroll loco de toda la página */
+  body{
+    overflow-x: hidden;
+  }
+
+  .main{
+    padding: 10px 8px 32px;
+  }
+
+  /* Las tablas se vuelven contenedores scrolleables horizontalmente */
+  table.data{
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table.data thead,
+  table.data tbody{
+    width: 100%;
+  }
+
+  /* Celdas más compactas en móvil */
+  table.data th,
+  table.data td{
+    padding: 6px 6px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  /* Enfatizar especialmente las tablas de ítems (factura y cotización) */
+  #invItemsTable,
+  #quoItemsTable{
+    min-width: 520px;  /* más ancha que la pantalla: se ve con scroll horizontal */
+  }
+}
+
 
 
 
