@@ -773,6 +773,22 @@ html, body{
     display: none !important;
   }
 }
+/* =========================================================
+   LOGIN MANDA: ocultar panel y app mientras esté activo
+   ========================================================= */
+
+/* Asegurarnos de que el login esté siempre por encima de todo */
+.fullscreen-login{
+  z-index: 9999 !important;
+}
+
+/* Mientras #login tenga .view.visible,
+   se ocultan el panel móvil y la app de escritorio */
+#login.view.visible ~ .mobile-quick-panel,
+#login.view.visible ~ .desktop-wrapper{
+  display: none !important;
+}
+
 
 
 
