@@ -652,3 +652,33 @@ a:hover{ text-decoration:underline; }
     display: none;
   }
 }
+/* =========================================================
+   FIX LOGIN – Centrar la pantalla de PIN
+   ========================================================= */
+
+/* Asegurar que el overlay de login siempre sea FLEX centrado */
+.fullscreen-login{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 24px;
+  gap: 24px;
+  z-index: 999;
+}
+
+/* Cuando el login está activo (tiene .view.visible) forzamos el display flex */
+.fullscreen-login.view.visible{
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Por si alguna regla anterior intentó bloquearlo */
+.fullscreen-login.view{
+  display: none !important;
+}
+
