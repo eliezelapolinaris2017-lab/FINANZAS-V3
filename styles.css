@@ -865,6 +865,155 @@ body.locked {
     white-space: nowrap;
   }
 }
+/* =========================================================
+   MODO MÓVIL: FACTURAS / COTIZACIONES SIN ROMPER LA PANTALLA
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  /* Nada de scroll raro horizontal general */
+  body,
+  .main,
+  #invoices,
+  #quotes{
+    overflow-x: hidden;
+  }
+
+  /* Tablas de ítems: se convierten en "cards" verticales */
+  #invItemsTable,
+  #quoItemsTable{
+    display: block;
+    width: 100%;
+    min-width: 0 !important;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow-x: visible !important;
+  }
+
+  #invItemsTable thead,
+  #quoItemsTable thead{
+    display: none;      /* Ocultamos encabezados en móvil */
+  }
+
+  #invItemsTable tbody,
+  #quoItemsTable tbody{
+    display: block;
+    width: 100%;
+  }
+
+  #invItemsTable tr,
+  #quoItemsTable tr{
+    display: block;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: #0f131a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  #invItemsTable td,
+  #quoItemsTable td{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 4px 0;
+    font-size: 0.8rem;
+    white-space: normal;
+  }
+
+  /* Etiquetas simuladas en cada fila (usamos nth-child porque el HTML lo genera JS) */
+  #invItemsTable td::before,
+  #quoItemsTable td::before{
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-right: 6px;
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+  }
+
+  /* FACTURA: columnas */
+  #invItemsTable td:nth-child(1)::before{ content: "Descripción"; }
+  #invItemsTable td:nth-child(2)::before{ content: "Cant."; }
+  #invItemsTable td:nth-child(3)::before{ content: "Precio"; }
+  #invItemsTable td:nth-child(4)::before{ content: "Imp %"; }
+  #invItemsTable td:nth-child(5)::before{ content: "Importe"; }
+  #invItemsTable td:nth-child(6)::before{ content: ""; } /* Acciones (botón borrar) */
+
+  /* COTIZACIÓN: columnas (mismo orden) */
+  #quoItemsTable td:nth-child(1)::before{ content: "Descripción"; }
+  #quoItemsTable td:nth-child(2)::before{ content: "Cant."; }
+  #quoItemsTable td:nth-child(3)::before{ content: "Precio"; }
+  #quoItemsTable td:nth-child(4)::before{ content: "Imp %"; }
+  #quoItemsTable td:nth-child(5)::before{ content: "Importe"; }
+  #quoItemsTable td:nth-child(6)::before{ content: ""; } /* Acciones */
+
+  /* Inputs dentro de las tarjetas: ocupar el espacio correcto */
+  #invItemsTable td input,
+  #quoItemsTable td input{
+    flex: 1 1 auto;
+    max-width: 60%;
+    font-size: 0.82rem;
+  }
+
+  /* Descripción: campo ancho y alineado a la izquierda */
+  #invItemsTable td:nth-child(1) input,
+  #quoItemsTable td:nth-child(1) input{
+    max-width: 100%;
+    text-align: left;
+  }
+
+  /* Cantidad, precio, imp, importe: números a la derecha */
+  #invItemsTable td:nth-child(2) input,
+  #invItemsTable td:nth-child(3) input,
+  #invItemsTable td:nth-child(4) input,
+  #invItemsTable td:nth-child(5) input,
+  #quoItemsTable td:nth-child(2) input,
+  #quoItemsTable td:nth-child(3) input,
+  #quoItemsTable td:nth-child(4) input,
+  #quoItemsTable td:nth-child(5) input{
+    text-align: right;
+  }
+
+  /* Celda de acciones (botón eliminar) alineada a la derecha sin label visible */
+  #invItemsTable td:nth-child(6),
+  #quoItemsTable td:nth-child(6){
+    justify-content: flex-end;
+  }
+  #invItemsTable td:nth-child(6)::before,
+  #quoItemsTable td:nth-child(6)::before{
+    content: "";
+  }
+
+  /* Botón de borrar ítem más compacto */
+  #invItemsTable td:nth-child(6) .btn-outline,
+  #quoItemsTable td:nth-child(6) .btn-outline{
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  /* Totales debajo, sin romper el ancho */
+  #invoices .totals,
+  #quotes .totals{
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra compresión en pantallas muy pequeñas (iPhone mini, por ejemplo) */
+@media (max-width: 480px){
+  #invItemsTable td,
+  #quoItemsTable td{
+    font-size: 0.75rem;
+  }
+  #invItemsTable td input,
+  #quoItemsTable td input{
+    font-size: 0.75rem;
+  }
+}
 
 
 
