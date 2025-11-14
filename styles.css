@@ -729,5 +729,43 @@ body.locked {
     justify-content: center;
   }
 }
+/* ===== FIX FINAL: centrar SIEMPRE el login PIN ===== */
+
+/* Estado base del contenedor de login */
+#login.fullscreen-login.view{
+  position: fixed;
+  inset: 0;
+  padding: 24px;
+  background:
+    radial-gradient(900px 600px at 10% -10%, rgba(199,162,75,0.12), transparent 50%),
+    radial-gradient(1200px 800px at 100% 0%, rgba(199,162,75,0.08), transparent 50%),
+    linear-gradient(180deg,#0a0d12 0%, #070a0f 100%);
+  display: none;              /* por defecto oculto */
+  z-index: 9999;
+  display: none !important;   /* asegura que lo que venga antes no lo muestre */
+}
+
+/* Cuando está visible: centrado absoluto en la pantalla */
+#login.fullscreen-login.view.visible{
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* Asegurar que el bloque del formulario no se estire raro */
+#login .login-wrap{
+  max-width: 560px;
+  width: 100%;
+}
+
+/* En pantallas pequeñas el hero se apila encima del formulario */
+@media (max-width: 768px){
+  #login.fullscreen-login.view.visible{
+    flex-direction: column;
+  }
+}
+
 
 
