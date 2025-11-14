@@ -740,5 +740,39 @@ html, body{
     font-size: 1rem;
   }
 }
+/* =========================================================
+   MODO MÓVIL: solo panel rápido
+   ========================================================= */
+
+/* Por defecto: panel móvil oculto (escritorio) */
+.mobile-quick-panel{
+  display: none;
+}
+
+/* En móviles: solo se ve el panel rápido, se esconde el resto */
+@media (max-width: 768px){
+
+  .desktop-wrapper{
+    display: none !important;
+  }
+
+  .mobile-quick-panel{
+    display: block !important;
+    max-width: 100%;
+  }
+}
+
+/* En escritorio / pantallas grandes: app completa, sin panel móvil */
+@media (min-width: 769px){
+
+  .desktop-wrapper{
+    display: block !important;
+  }
+
+  .mobile-quick-panel{
+    display: none !important;
+  }
+}
+
 
 
