@@ -40,8 +40,9 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+body.locked { overflow: hidden; }
 
-/* ------------------ Utilidades layout ------------------ */
+/* ------------------ Layout principal ------------------ */
 .main{
   margin-left: var(--sidebar-w);
   min-height: 100vh;
@@ -59,6 +60,11 @@ body{
 .center{ text-align:center; }
 .right{ text-align:right; }
 .muted{ color: var(--muted); }
+
+/* Wrapper desktop (HTML ya lo tiene) */
+.desktop-wrapper{
+  /* ahora mismo no forzamos nada; sirve de contenedor lógico */
+}
 
 /* ------------------ Sidebar ------------------ */
 .sidebar{
@@ -120,6 +126,7 @@ body{
 
 /* Sidebar móvil */
 #menuToggle{ display:none; }
+
 @media (max-width: 980px){
   .main{ margin-left:0; padding-top:70px; }
   .sidebar{
@@ -185,13 +192,17 @@ body{
 }
 
 /* Accesibilidad foco */
-.btn:focus, .btn-outline:focus, .nav-btn:focus, input:focus, select:focus, textarea:focus{
+.btn:focus, .btn-outline:focus, .nav-btn:focus,
+input:focus, select:focus, textarea:focus{
   outline: 2px solid rgba(199,162,75,0.45);
   outline-offset: 2px;
 }
 
 /* ------------------ Formularios ------------------ */
-label{ font-size:.92rem; color:#d9dee7; display:flex; flex-direction:column; gap:6px; }
+label{
+  font-size:.92rem; color:#d9dee7;
+  display:flex; flex-direction:column; gap:6px;
+}
 input, select, textarea{
   background: #0f141c;
   color: #e6e8ed;
@@ -233,7 +244,7 @@ table.data tbody tr:hover{
 .row-actions{ white-space: nowrap; }
 .row-actions .btn-outline{ padding:6px 8px; font-size:.85rem; }
 
-/* Alinear columnas monetarias a la derecha */
+/* Columnas monetarias alineadas a la derecha */
 #expensesTable th:nth-child(5), #expensesTable td:nth-child(5),
 #incomesTable  th:nth-child(4), #incomesTable  td:nth-child(4),
 #paymentsTable th:nth-child(4), #paymentsTable td:nth-child(4),
@@ -243,6 +254,14 @@ table.data tbody tr:hover{
 #reconTable    th:nth-child(4), #reconTable    td:nth-child(4),
 #invoicesTable th:nth-child(4), #invoicesTable td:nth-child(4),
 #quotesTable   th:nth-child(4), #quotesTable   td:nth-child(4){
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Ajustes después de añadir columna Ref */
+#expensesTable th:nth-child(6), #expensesTable td:nth-child(6),
+#incomesTable  th:nth-child(5), #incomesTable  td:nth-child(5){
   text-align: right;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
@@ -345,7 +364,6 @@ table.data tbody tr:hover{
 .hero-subtitle{
   margin:6px 0 0; color:#cfcfcf;
 }
-
 .login-wrap{ width:min(560px, 92vw); }
 .login-card{
   background: linear-gradient(180deg,#0f131a, #0b0d10);
@@ -357,12 +375,24 @@ table.data tbody tr:hover{
 .login-card h2{ margin:10px 0 4px; color:#fff; text-align:center; }
 .login-card p{ color:#cfcfcf; text-align:center; }
 
-/* Ocultar login cuando no esté visible */
-.fullscreen-login.view:not(.visible){ display:none; }
+/* ------------------ SPA: vistas ------------------ */
+/* Ocultar todas las vistas por defecto */
+.view{
+  display:none;
+}
 
-/* ------------------ Vistas SPA ------------------ */
-.view{ display:none; }
-.view.visible{ display:block; }
+/* Mostrar solo la vista activa */
+.view.visible{
+  display:block;
+}
+
+/* El login es una vista especial que debe ser flex cuando visible */
+.fullscreen-login.view{
+  display:none;
+}
+.fullscreen-login.view.visible{
+  display:flex;
+}
 
 /* ------------------ Toasts ------------------ */
 .toasts{
@@ -503,142 +533,23 @@ a:hover{ text-decoration:underline; }
   flex-direction: column;
 }
 
-body.locked {
-  overflow: hidden;
-}
-/* Alinear Monto después de añadir columna Ref */
-#expensesTable th:nth-child(6), #expensesTable td:nth-child(6),
-#incomesTable  th:nth-child(5), #incomesTable  td:nth-child(5){
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1, "lnum" 1;
-}
-/* ===== FIX DURO: solo mostrar la vista activa ===== */
-main .view { 
-  display: none !important;
-}
-main .view.visible {
-  display: block !important;
-}
-
-/* El login necesita flex cuando está visible */
-.fullscreen-login.view { 
-  display: none !important;
-}
-.fullscreen-login.view.visible {
-  display: flex !important;
-}
-/* =========================================================
-   FIX DEFINITIVO – Mostrar solo la vista activa
-   ========================================================= */
-
-/* Oculta TODAS las vistas por defecto */
-.view {
-  display: none !important;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity .25s ease;
-  position: relative;
-  z-index: 1;
-}
-
-/* Solo la vista activa estará visible */
-.view.visible {
-  display: block !important;
-  visibility: visible;
-  opacity: 1;
-  z-index: 5;
-}
-
-/* Pantalla de login (PIN) centrada y visible solo cuando tenga .visible */
-.fullscreen-login.view {
-  display: none !important;
-  align-items: center;
-  justify-content: center;
-}
-.fullscreen-login.view.visible {
-  display: flex !important;
-  opacity: 1;
-  visibility: visible;
-  z-index: 999;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(1000px 600px at center, #10131a 0%, #07090d 100%);
-}
-/* ===== FIX DEFINITIVO: Mostrar solo la vista activa ===== */
-
-/* Ocultar todas las vistas por defecto */
-.view {
-  display: none !important;
-}
-
-/* Mostrar solo la vista activa (la que tiene la clase .visible) */
-.view.visible {
-  display: block !important;
-}
-
-/* El login necesita modo flex para centrarse */
-.fullscreen-login.view {
-  display: none !important;
-}
-.fullscreen-login.view.visible {
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-/* ===== SPA: mostrar solo la vista activa ===== */
-.view{ display:none !important; }
-.view.visible{ display:block !important; }
-
-/* El login necesita flex para centrarse */
-.fullscreen-login.view{ display:none !important; }
-.fullscreen-login.view.visible{
-  display:flex !important;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-}
-/* ===== SPA: mostrar SOLO la vista activa ===== */
-.view{ display:none !important; }
-.view.visible{ display:block !important; }
-
-/* Login (overlay a pantalla completa y centrado) */
-.fullscreen-login.view{ display:none !important; }
-.fullscreen-login.view.visible{
-  display:flex !important;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-}
-
-/* Seguridad: si algún contenedor fuerza display en secciones, no lo permitas */
-section.view, div.view { display:none !important; }
-section.view.visible, div.view.visible { display:block !important; }
 /* =========================================================
    PANEL MÓVIL – Nexus Finance
    ========================================================= */
 
-/* Por defecto, el panel móvil está oculto (solo saldrá en pantallas pequeñas) */
+/* Por defecto, el panel móvil está oculto */
 .mobile-quick-panel {
   display: none;
 }
 
-/* Wrapper de escritorio (ya existe en el HTML) */
-.desktop-wrapper {
-  /* no tocamos el layout de escritorio por ahora */
-}
-
 /* ===== Estilos específicos para MÓVIL ===== */
 @media (max-width: 768px) {
-  /* Ajuste pequeño de body en móviles */
   body {
     margin: 0;
     padding: 0;
     font-family: var(--font);
   }
 
-  /* Mostrar el panel rápido en móvil */
   .mobile-quick-panel {
     display: block;
     padding: 16px;
@@ -730,16 +641,14 @@ section.view.visible, div.view.visible { display:block !important; }
     box-shadow: none;
   }
 
-  /* Pequeño ajuste para que el contenido de abajo no se pegue al panel */
   .desktop-wrapper {
     padding-top: 8px;
   }
 }
 
-/* En pantallas grandes, el panel se oculta */
+/* En pantallas grandes, el panel se oculta siempre */
 @media (min-width: 769px) {
   .mobile-quick-panel {
     display: none;
   }
 }
-
