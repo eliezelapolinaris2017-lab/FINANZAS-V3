@@ -681,4 +681,64 @@ a:hover{ text-decoration:underline; }
 .fullscreen-login.view{
   display: none !important;
 }
+/* =========================================================
+   FIX RESPONSIVE iPHONE – Evitar desbordes horizontales
+   ========================================================= */
+
+/* Corte duro: que nunca se ensanche más que la pantalla */
+html, body{
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Asegurar que el layout principal no empuje el ancho */
+.desktop-wrapper,
+.main{
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* En móviles: tablas desplazables en vez de romper el layout */
+@media (max-width: 768px){
+
+  /* Las tablas pueden hacer scroll horizontal sin dañar el ancho de la página */
+  table.data{
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table.data thead,
+  table.data tbody,
+  table.data tr,
+  table.data th,
+  table.data td{
+    white-space: nowrap;
+  }
+
+  /* Ajustar un poco el padding general para que no se sienta apretado */
+  .main{
+    padding: 12px 10px 32px;
+  }
+
+  /* Panel móvil: que no se pegue a los bordes ni se abra más que la pantalla */
+  .mobile-quick-panel{
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* Por si las cards del panel se apretujan, una debajo de la otra */
+  .mq-summary{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .mq-card strong{
+    font-size: 1rem;
+  }
+}
+
 
