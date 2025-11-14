@@ -45,15 +45,15 @@
 
     <div class="mq-summary">
       <div class="mq-card">
-        <span>Ingresos (Mes)</span>
+        <span>Ingresos hoy</span>
         <strong id="mq-income-today">$0.00</strong>
       </div>
       <div class="mq-card">
-        <span>Gastos (Mes)</span>
+        <span>Gastos hoy</span>
         <strong id="mq-expenses-today">$0.00</strong>
       </div>
       <div class="mq-card">
-        <span>Balance (Mes)</span>
+        <span>Balance mes</span>
         <strong id="mq-balance-month">$0.00</strong>
       </div>
     </div>
@@ -193,7 +193,6 @@
                 <th>Categoría</th>
                 <th>Descripción</th>
                 <th>Método</th>
-                <!-- (sin columna Ref para alinear con el JS actual) -->
                 <th>Monto</th>
                 <th>Nota</th>
                 <th></th>
@@ -254,7 +253,6 @@
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>Método</th>
-                <!-- (sin columna Ref para alinear con el JS actual) -->
                 <th>Monto</th>
                 <th></th>
               </tr>
@@ -697,7 +695,8 @@
 
   <!-- ================== SCRIPTS ================== -->
   <script>
-    // Cambia de vista usando el menú lateral (SPA) en vez de solo hacer scroll
+    // Cambia de vista usando el menú lateral (SPA)
+    // y en móvil muestra la app completa (oculta el panel rápido)
     function openQuickForm(tipo) {
       let targetId = null;
 
@@ -712,8 +711,27 @@
       if (!targetId) return;
 
       const navBtn = document.querySelector('.nav-btn[data-target="' + targetId + '"]');
-      if (navBtn) {
-        navBtn.click(); // deja que app.js maneje el cambio de vista
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+      if (isMobile) {
+        // Mostrar la app y ocultar el panel rápido
+        document.body.classList.add('show-mobile-view');
+
+        // Dejar que app.js maneje el cambio de vista
+        if (navBtn) {
+          navBtn.click();
+        }
+
+        // Asegurar que la sección correcta quede visible
+        const section = document.getElementById(targetId);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // Escritorio: solo cambiar de vista dentro de la SPA
+        if (navBtn) {
+          navBtn.click();
+        }
       }
     }
 
@@ -732,11 +750,11 @@
       if (kpiBalance && mqBalance) mqBalance.textContent = kpiBalance.textContent;
     }
 
-    // Observar cambios en los KPIs para mantener sincronizado el panel móvil
     window.addEventListener('DOMContentLoaded', () => {
-      // Primer sync por si ya hay datos iniciales
+      // Sincronizar una vez al cargar
       syncMobileQuickPanel();
 
+      // Observar cambios en los KPIs para actualizar el panel
       const targets = [
         'kpiIncomesMonth',
         'kpiExpensesMonth',
