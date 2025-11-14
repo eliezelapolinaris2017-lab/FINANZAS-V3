@@ -45,15 +45,15 @@
 
     <div class="mq-summary">
       <div class="mq-card">
-        <span>Ingresos hoy</span>
+        <span>Ingresos (Mes)</span>
         <strong id="mq-income-today">$0.00</strong>
       </div>
       <div class="mq-card">
-        <span>Gastos hoy</span>
+        <span>Gastos (Mes)</span>
         <strong id="mq-expenses-today">$0.00</strong>
       </div>
       <div class="mq-card">
-        <span>Balance mes</span>
+        <span>Balance (Mes)</span>
         <strong id="mq-balance-month">$0.00</strong>
       </div>
     </div>
@@ -697,22 +697,66 @@
 
   <!-- ================== SCRIPTS ================== -->
   <script>
-    // Scroll rápido a secciones clave (se usan los IDs existentes)
+    // Cambia de vista usando el menú lateral (SPA) en vez de solo hacer scroll
     function openQuickForm(tipo) {
-      let el = null;
+      let targetId = null;
+
       if (tipo === 'ingreso') {
-        el = document.getElementById('incomes');
+        targetId = 'incomes';
       } else if (tipo === 'gasto') {
-        el = document.getElementById('expenses');
+        targetId = 'expenses';
       } else if (tipo === 'factura') {
-        el = document.getElementById('invoices');
+        targetId = 'invoices';
       }
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      if (!targetId) return;
+
+      const navBtn = document.querySelector('.nav-btn[data-target="' + targetId + '"]');
+      if (navBtn) {
+        navBtn.click(); // deja que app.js maneje el cambio de vista
       }
     }
+
+    // Copia los KPIs del dashboard al panel móvil
+    function syncMobileQuickPanel() {
+      const kpiIncome  = document.getElementById('kpiIncomesMonth');
+      const kpiExpense = document.getElementById('kpiExpensesMonth');
+      const kpiBalance = document.getElementById('kpiBalanceMonth');
+
+      const mqIncome   = document.getElementById('mq-income-today');
+      const mqExpense  = document.getElementById('mq-expenses-today');
+      const mqBalance  = document.getElementById('mq-balance-month');
+
+      if (kpiIncome && mqIncome)   mqIncome.textContent  = kpiIncome.textContent;
+      if (kpiExpense && mqExpense) mqExpense.textContent = kpiExpense.textContent;
+      if (kpiBalance && mqBalance) mqBalance.textContent = kpiBalance.textContent;
+    }
+
+    // Observar cambios en los KPIs para mantener sincronizado el panel móvil
+    window.addEventListener('DOMContentLoaded', () => {
+      // Primer sync por si ya hay datos iniciales
+      syncMobileQuickPanel();
+
+      const targets = [
+        'kpiIncomesMonth',
+        'kpiExpensesMonth',
+        'kpiBalanceMonth'
+      ];
+
+      const observer = new MutationObserver(syncMobileQuickPanel);
+
+      targets.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          observer.observe(el, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+        }
+      });
+    });
   </script>
   <script type="module" src="app.js?v=7"></script>
 </body>
 </html>
-
