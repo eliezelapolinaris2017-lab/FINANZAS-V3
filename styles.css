@@ -825,6 +825,46 @@ body.locked {
     min-width: 520px;  /* más ancha que la pantalla: se ve con scroll horizontal */
   }
 }
+/* ===== iPhone FIX: evitar zoom loco al enfocar inputs ===== */
+@supports (-webkit-touch-callout: none) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;  /* clave para que iOS no haga zoom */
+  }
+}
+/* ===== Contención extra en móvil para facturas/cotizaciones ===== */
+@media (max-width: 768px){
+
+  body{
+    overflow-x: hidden;
+  }
+
+  .main{
+    overflow-x: hidden;
+  }
+
+  #invoices,
+  #quotes{
+    overflow-x: hidden;
+  }
+
+  #invItemsTable,
+  #quoItemsTable{
+    display: block;
+    width: 100%;
+    min-width: 520px;            /* tabla más ancha, pero con scroll interno */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #invItemsTable th,
+  #invItemsTable td,
+  #quoItemsTable th,
+  #quoItemsTable td{
+    white-space: nowrap;
+  }
+}
 
 
 
