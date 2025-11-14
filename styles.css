@@ -1052,6 +1052,28 @@ body.locked {
 .mq-settings-action button:active{
   transform: translateY(1px);
 }
+/* =========================================================
+   ESTADO GLOBAL: mostrar app salvo cuando el login esté visible
+   ========================================================= */
+
+/* Estado base: la app principal SIEMPRE visible */
+.desktop-wrapper{
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.mobile-quick-panel{
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Cuando el login está visible, ocultar panel móvil y app completa */
+#login.fullscreen-login.view.visible ~ .mobile-quick-panel,
+#login.fullscreen-login.view.visible ~ .desktop-wrapper{
+  display: none !important;
+}
 
 
 
