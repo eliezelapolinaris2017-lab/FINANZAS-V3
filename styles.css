@@ -1032,6 +1032,27 @@ body.locked {
     display: none !important;
   }
 }
+/* Botón de configuración en panel móvil */
+.mq-settings-action{
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.mq-settings-action button{
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(199,162,75,0.5);
+  background: #0f131a;
+  color: #f2f3f5;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+.mq-settings-action button:active{
+  transform: translateY(1px);
+}
+
 
 
 
