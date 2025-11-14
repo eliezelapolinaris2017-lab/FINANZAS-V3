@@ -103,6 +103,8 @@
     <main class="main">
       <div class="topbar">
         <button id="menuToggle" class="btn-outline">☰</button>
+        <!-- NUEVO: botón para volver al panel rápido (solo móvil) -->
+        <button id="backToPanelBtn" class="btn-outline mobile-only">⬅ Panel rápido</button>
         <div class="grow"></div>
         <button id="printBtn" class="btn-outline">🖨️ Exportar PDF</button>
       </div>
@@ -773,6 +775,15 @@
           });
         }
       });
+
+      // NUEVO: botón para volver al panel rápido en móvil
+      const backBtn = document.getElementById('backToPanelBtn');
+      if (backBtn) {
+        backBtn.addEventListener('click', () => {
+          document.body.classList.remove('show-mobile-view');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
     });
   </script>
   <script type="module" src="app.js?v=7"></script>
