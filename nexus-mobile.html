@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Nexus Finance Móvil</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="nexus-mobile.css?v=1">
+  <link rel="stylesheet" href="nexus-mobile.css?v=2">
 </head>
 <body>
   <div class="mobile-app">
@@ -49,6 +49,28 @@
         </div>
         <div id="todayInvoices" class="list-empty">
           No hay facturas registradas hoy.
+        </div>
+      </div>
+
+      <!-- 🔵 TARJETA: Sincronización con Firebase -->
+      <div class="card sync-card">
+        <div class="card-title-row">
+          <h2>Sincronización en la nube</h2>
+        </div>
+        <div class="sync-buttons">
+          <button id="btnSignInMobile"  class="btn-outline full-width">Conectar con Google</button>
+          <button id="btnSignOutMobile" class="btn-outline full-width" style="display:none;">Cerrar sesión</button>
+          <button id="btnSyncPullMobile" class="btn-outline full-width">Traer datos de la nube</button>
+          <button id="btnSyncPushMobile" class="btn-outline full-width">Enviar datos a la nube</button>
+
+          <label class="sync-autoswitch">
+            <input type="checkbox" id="chkAutosyncMobile">
+            <span>AutoSync</span>
+          </label>
+
+          <div id="syncStatusMobile" class="sync-status">
+            Sin conexión
+          </div>
         </div>
       </div>
 
@@ -202,6 +224,7 @@
 
   </div>
 
-  <script src="nexus-mobile-app.js?v=1"></script>
+  <!-- AHORA ES MÓDULO -->
+  <script type="module" src="nexus-mobile-app.js?v=2"></script>
 </body>
 </html>
