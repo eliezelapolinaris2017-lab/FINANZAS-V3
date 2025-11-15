@@ -751,3 +751,12 @@ table.data tbody tr:hover{
 small, .small{ color: var(--text-dim); }
 a{ color: var(--accent); text-decoration:none; }
 a:hover{ text-decoration:underline; }
+/* =========================================================
+   OVERRIDE PARA DESKTOP: asegurar que las vistas se vean
+   ========================================================= */
+@media (min-width: 769px){
+  .view{
+    display: block !important;  /* Fuerza que todas las secciones sean visibles en desktop */
+  }
+}
+
