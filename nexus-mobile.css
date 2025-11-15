@@ -383,3 +383,34 @@ a.btn-link{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
 }
+/* ==== Sincronización Firebase (mini app) ==== */
+
+.sync-card{
+  margin-top:4px;
+}
+
+.sync-buttons{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.sync-autoswitch{
+  margin-top:4px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:.8rem;
+  color:var(--text-dim);
+}
+
+.sync-autoswitch input{
+  width:16px;
+  height:16px;
+}
+
+.sync-status{
+  margin-top:4px;
+  font-size:.78rem;
+  color:var(--text-dim);
+}
