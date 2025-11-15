@@ -1,0 +1,358 @@
+/* =========================================================
+   NEXUS FINANCE — MÓVIL
+   UI optimizada 100% mobile-first
+   ========================================================= */
+
+:root {
+  --bg: #0c0f15;
+  --bg-card: #11151c;
+  --text: #f2f3f5;
+  --text-dim: #9aa0ad;
+  --accent: #c7a24b;
+  --accent-dark: #a58439;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, sans-serif;
+  padding: 10px;
+  overflow-x: hidden;
+}
+
+.mobile-app {
+  max-width: 520px;
+  margin: auto;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.app-header {
+  padding: 10px 0 20px;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  object-fit: contain;
+  background: #0b0d10;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.brand-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.brand-sub {
+  font-size: .85rem;
+  color: var(--text-dim);
+}
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+.screen {
+  display: none;
+  padding-bottom: 40px;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* =========================================================
+   KPI CARDS
+   ========================================================= */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.kpi-label {
+  color: var(--text-dim);
+  font-size: .85rem;
+}
+
+.kpi-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+  color: #101214;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.btn-primary:active {
+  transform: scale(.98);
+}
+
+.btn-outline {
+  background: #151922;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  width: 100%;
+}
+
+.btn-outline:active {
+  transform: scale(.98);
+}
+
+.btn-back {
+  background: none;
+  color: var(--accent);
+  font-size: 1.5rem;
+  border: none;
+  margin-right: 8px;
+}
+
+/* Buttons main block */
+.btn-group-main > button {
+  margin-bottom: 12px;
+}
+
+/* Vertical group (factura) */
+.btn-group-vertical > button {
+  margin-bottom: 12px;
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+.form-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: .9rem;
+  gap: 6px;
+}
+
+input, select {
+  background: #0f141c;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+input::placeholder {
+  color: #757c89;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.card {
+  background: var(--bg-card);
+  padding: 16px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.card h2 {
+  font-size: 1.2rem;
+}
+
+/* =========================================================
+   INVOICES LIST (HOME)
+   ========================================================= */
+.invoice-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.invoice-main {
+  display: flex;
+  flex-direction: column;
+  font-size: .9rem;
+}
+
+.invoice-amount {
+  font-size: .95rem;
+  color: var(--accent);
+}
+
+/* =========================================================
+   INVOICE FORM (MOBILE SAFE)
+   ========================================================= */
+.items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item-row {
+  background: #0f141c;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Descripción arriba */
+.item-desc {
+  width: 100%;
+}
+
+/* Cant, precio, impuesto juntos pero adaptativos */
+.item-row-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-remove-item {
+  background: #2b2f39;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* TOTALES (siempre responsivo) */
+.totals-box {
+  margin-top: 16px;
+  padding: 14px;
+  background: #0f141c;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .95rem;
+}
+
+.total-final {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* =========================================================
+   SYNC CARD
+   ========================================================= */
+.sync-card {
+  padding: 16px;
+}
+
+.sync-buttons > button {
+  margin-bottom: 10px;
+}
+
+.sync-status {
+  margin-top: 10px;
+  font-size: .8rem;
+  color: var(--text-dim);
+}
+
+/* =========================================================
+   LINK CARD
+   ========================================================= */
+.card-link {
+  text-align: center;
+}
+
+.card-text-small {
+  color: var(--text-dim);
+  font-size: .9rem;
+  margin-bottom: 8px;
+}
+
+.btn-link {
+  color: var(--accent);
+  font-size: 1rem;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  background: #11141b;
+  padding: 12px 18px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: .95rem;
+  opacity: 0;
+  transition: .25s;
+  box-shadow: var(--shadow);
+  max-width: 90%;
+  text-align: center;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
