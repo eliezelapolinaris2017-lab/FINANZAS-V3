@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nexus Finance Móvil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="nexus-mobile.css?v=1">
+</head>
+<body>
+  <div class="mobile-app">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="app-brand">
+        <img src="assets/logo.png" alt="Logo" class="brand-logo">
+        <div>
+          <h1 class="brand-title">Nexus Finance</h1>
+          <p class="brand-sub">Panel rápido móvil</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- RESUMEN HOY -->
+    <section id="screen-home" class="screen active">
+      <div class="summary-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">Ingresos hoy</span>
+          <span id="kpi-income-today" class="kpi-value">—</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Gastos hoy</span>
+          <span id="kpi-expenses-today" class="kpi-value">—</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Balance hoy</span>
+          <span id="kpi-balance-today" class="kpi-value">—</span>
+        </div>
+      </div>
+
+      <div class="btn-group-main">
+        <button id="btnGoIncome"  class="btn-primary">+ Ingreso rápido</button>
+        <button id="btnGoExpense" class="btn-outline">+ Gasto rápido</button>
+        <button id="btnGoInvoice" class="btn-primary">🧾 Nueva factura</button>
+      </div>
+
+      <div class="today-list card">
+        <div class="card-title-row">
+          <h2>Facturas de hoy</h2>
+        </div>
+        <div id="todayInvoices" class="list-empty">
+          No hay facturas registradas hoy.
+        </div>
+      </div>
+
+      <div class="card card-link">
+        <p class="card-text-small">
+          ¿Necesitas todas las funciones (Firebase, reportes, historial completo)?
+        </p>
+        <a href="index.html" class="btn-link">Abrir versión completa de Nexus</a>
+      </div>
+    </section>
+
+    <!-- INgreso rápido -->
+    <section id="screen-income" class="screen">
+      <div class="card">
+        <div class="card-title-row">
+          <button class="btn-back" data-back="home">←</button>
+          <h2>Nuevo ingreso rápido</h2>
+        </div>
+        <form id="formIncome" class="form-grid">
+          <label>Fecha
+            <input type="date" id="incDateMobile">
+          </label>
+          <label>Cliente / origen
+            <input type="text" id="incClientMobile" placeholder="Nombre o referencia">
+          </label>
+          <label>Método
+            <select id="incMethodMobile">
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
+              <option>ATH Móvil</option>
+              <option>Transferencia</option>
+              <option>Cheque</option>
+            </select>
+          </label>
+          <label>Monto
+            <input type="number" step="0.01" id="incAmountMobile" placeholder="0.00">
+          </label>
+          <button class="btn-primary full-width" type="submit">Guardar ingreso</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Gasto rápido -->
+    <section id="screen-expense" class="screen">
+      <div class="card">
+        <div class="card-title-row">
+          <button class="btn-back" data-back="home">←</button>
+          <h2>Nuevo gasto rápido</h2>
+        </div>
+        <form id="formExpense" class="form-grid">
+          <label>Fecha
+            <input type="date" id="expDateMobile">
+          </label>
+          <label>Categoría
+            <input type="text" id="expCategoryMobile" placeholder="Ej. Gasolina, Comida, etc.">
+          </label>
+          <label>Método
+            <select id="expMethodMobile">
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
+              <option>ATH Móvil</option>
+              <option>Transferencia</option>
+              <option>Cheque</option>
+            </select>
+          </label>
+          <label>Monto
+            <input type="number" step="0.01" id="expAmountMobile" placeholder="0.00">
+          </label>
+          <button class="btn-outline full-width" type="submit">Guardar gasto</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- NUEVA FACTURA -->
+    <section id="screen-invoice" class="screen">
+      <div class="card">
+        <div class="card-title-row">
+          <button class="btn-back" data-back="home">←</button>
+          <h2>Nueva factura</h2>
+        </div>
+
+        <form id="formInvoice" class="form-grid">
+          <label>Fecha
+            <input type="date" id="invDateMobile">
+          </label>
+          <label># Factura
+            <input type="text" id="invNumberMobile" placeholder="Ej. 000123">
+          </label>
+          <label>Cliente
+            <input type="text" id="invClientMobile" placeholder="Nombre del cliente">
+          </label>
+          <label>Teléfono (WhatsApp)
+            <input type="tel" id="invPhoneMobile" placeholder="Ej. 17871234567">
+          </label>
+          <label>Método de pago
+            <select id="invMethodMobile">
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
+              <option>ATH Móvil</option>
+              <option>Transferencia</option>
+              <option>Cheque</option>
+            </select>
+          </label>
+
+          <div class="subsection">
+            <div class="subsection-header">
+              <span>Ítems de la factura</span>
+              <button type="button" id="btnAddItem" class="btn-outline btn-small">+ Ítem</button>
+            </div>
+            <div id="invItemsContainer" class="items-container">
+              <!-- filas dinámicas -->
+            </div>
+          </div>
+
+          <div class="totals-box">
+            <div class="totals-row">
+              <span>Subtotal</span>
+              <strong id="invSubtotalMobile">—</strong>
+            </div>
+            <div class="totals-row">
+              <span>Impuestos</span>
+              <strong id="invTaxMobile">—</strong>
+            </div>
+            <div class="totals-row total-final">
+              <span>Total</span>
+              <strong id="invTotalMobile">—</strong>
+            </div>
+          </div>
+
+          <label>Nota
+            <input type="text" id="invNoteMobile" placeholder="Nota opcional">
+          </label>
+
+          <div class="btn-group-vertical">
+            <button type="button" id="btnCalcInvoice" class="btn-outline full-width">
+              Calcular totales
+            </button>
+            <button type="submit" id="btnSaveInvoice" class="btn-primary full-width">
+              Guardar factura
+            </button>
+            <button type="button" id="btnSaveInvoiceWhatsApp" class="btn-primary full-width">
+              Guardar y abrir WhatsApp
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+  </div>
+
+  <script src="nexus-mobile-app.js?v=1"></script>
+</body>
+</html>
