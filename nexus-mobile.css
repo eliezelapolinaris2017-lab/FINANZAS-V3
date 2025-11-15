@@ -1,0 +1,385 @@
+/* ===============================
+   Nexus Finance Móvil — Estilos
+   Tema oscuro negro/dorado
+   =============================== */
+
+:root{
+  --bg:      #05070b;
+  --bg-soft: #10141c;
+  --card:    #121720;
+  --border:  rgba(255,255,255,0.08);
+  --accent:  #C7A24B;
+  --accent2: #FFD991;
+  --text:    #F4F5F8;
+  --text-dim:#A5ABBB;
+  --danger:  #ff4c5b;
+  --radius:  14px;
+  --shadow:  0 14px 40px rgba(0,0,0,0.65);
+  --font: "Inter","SF Pro Text","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+
+*{ box-sizing:border-box; }
+
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+}
+
+body{
+  font-family:var(--font);
+  color:var(--text);
+  background:
+    radial-gradient(900px 600px at -10% -10%, #1b2233 0%, transparent 50%),
+    radial-gradient(900px 600px at 110% 0%, rgba(199,162,75,0.16) 0%, transparent 55%),
+    linear-gradient(180deg,#05070b 0%,#05070b 100%);
+}
+
+/* CONTENEDOR PRINCIPAL */
+.mobile-app{
+  max-width:480px;
+  margin:0 auto;
+  padding:16px 12px 40px;
+}
+
+/* HEADER */
+.app-header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  padding:6px 4px 10px;
+  margin-bottom:10px;
+  background:rgba(5,7,11,0.92);
+  backdrop-filter:blur(12px);
+}
+
+.app-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brand-logo{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:#05070b;
+  border:1px solid var(--border);
+  object-fit:contain;
+}
+
+.brand-title{
+  margin:0;
+  font-size:1.15rem;
+  font-weight:700;
+}
+
+.brand-sub{
+  margin:2px 0 0;
+  font-size:.8rem;
+  color:var(--text-dim);
+}
+
+/* SCREENS */
+.screen{
+  display:none;
+}
+.screen.active{
+  display:block;
+}
+
+/* KPIs */
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.kpi-card{
+  background: radial-gradient(160% 200% at -20% -10%, rgba(199,162,75,0.3), transparent),
+              var(--card);
+  border-radius:var(--radius);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:8px 9px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.6);
+}
+
+.kpi-label{
+  display:block;
+  font-size:.72rem;
+  color:var(--text-dim);
+  margin-bottom:2px;
+}
+
+.kpi-value{
+  font-size:.98rem;
+  font-weight:700;
+}
+
+/* BOTONES */
+button{
+  font-family:inherit;
+}
+
+.btn-primary,
+.btn-outline,
+.btn-link{
+  appearance:none;
+  border-radius:999px;
+  padding:10px 14px;
+  border:1px solid transparent;
+  font-size:.9rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .16s ease, box-shadow .16s ease, filter .16s ease, background .16s ease;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,#f7d878,#c89a38);
+  color:#231802;
+  border-color:rgba(255,239,187,0.7);
+  box-shadow:0 8px 20px rgba(0,0,0,0.7);
+}
+.btn-primary:active{
+  transform:translateY(1px);
+  filter:brightness(.95);
+}
+
+.btn-outline{
+  background:rgba(16,20,31,0.98);
+  color:var(--text);
+  border-color:var(--border);
+}
+.btn-outline:active{
+  transform:translateY(1px);
+  border-color:rgba(199,162,75,0.6);
+}
+
+.btn-link{
+  background:transparent;
+  color:var(--accent2);
+  padding:0;
+  border:none;
+  text-decoration:underline;
+}
+
+/* botones principales */
+.btn-group-main{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:16px;
+}
+
+/* FORMULARIOS */
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  padding:12px 12px 14px;
+  margin-bottom:14px;
+}
+
+.card-title-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.card-title-row h2{
+  margin:0;
+  font-size:1rem;
+}
+
+/* Botón volver */
+.btn-back{
+  background:rgba(14,18,28,0.95);
+  border-radius:999px;
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:.85rem;
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+/* Form grid */
+.form-grid{
+  display:grid;
+  gap:8px;
+}
+
+label{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-size:.82rem;
+  color:var(--text-dim);
+}
+
+input, select{
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#0a0f18;
+  color:var(--text);
+  padding:8px 9px;
+  font-size:.9rem;
+}
+
+input::placeholder{
+  color:rgba(165,171,187,0.7);
+}
+
+.full-width{
+  width:100%;
+}
+
+/* Sub-secciones factura */
+.subsection{
+  margin-top:8px;
+  padding-top:6px;
+  border-top:1px dashed rgba(255,255,255,0.1);
+}
+
+.subsection-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+  font-size:.86rem;
+}
+
+.btn-small{
+  padding:6px 10px;
+  font-size:.78rem;
+}
+
+/* Items de factura */
+.items-container{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.item-row{
+  display:grid;
+  grid-template-columns: 1.8fr 0.9fr 0.9fr 0.9fr;
+  gap:4px;
+}
+
+.item-row input{
+  padding:7px 7px;
+  font-size:.8rem;
+}
+
+.item-actions{
+  margin-top:2px;
+  text-align:right;
+}
+
+.btn-remove-item{
+  background:none;
+  border:none;
+  color:var(--text-dim);
+  font-size:.78rem;
+  cursor:pointer;
+}
+
+/* Totales */
+.totals-box{
+  margin-top:10px;
+  padding:8px 9px;
+  border-radius:10px;
+  background:#10141f;
+  border:1px solid rgba(255,255,255,0.07);
+}
+
+.totals-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:.86rem;
+  margin-bottom:3px;
+}
+
+.total-final{
+  margin-top:3px;
+  padding-top:4px;
+  border-top:1px dashed rgba(255,255,255,0.15);
+}
+
+/* Listado de facturas de hoy */
+.today-list h2{
+  font-size:.95rem;
+  margin:0 0 6px;
+}
+
+#todayInvoices{
+  font-size:.82rem;
+}
+
+.list-empty{
+  color:var(--text-dim);
+}
+
+.invoice-pill{
+  padding:6px 7px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.08);
+  margin-bottom:5px;
+  font-size:.82rem;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.invoice-pill strong{
+  color:var(--accent2);
+}
+
+/* Tarjeta link a versión completa */
+.card-link{
+  text-align:center;
+}
+.card-text-small{
+  margin:0 0 6px;
+  font-size:.8rem;
+  color:var(--text-dim);
+}
+
+/* Toast */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:14px;
+  transform:translateX(-50%);
+  background:#0d111a;
+  color:var(--text);
+  padding:7px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.15);
+  font-size:.8rem;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+  z-index:50;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(-4px);
+}
+
+/* Botón link */
+a.btn-link{
+  display:inline-block;
+  font-size:.82rem;
+}
+
+/* Layout small screens */
+@media (max-width:380px){
+  .summary-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
