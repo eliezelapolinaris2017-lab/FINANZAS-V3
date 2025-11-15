@@ -674,3 +674,108 @@ window.nexusMobile = {
   cloudPush,
   renderKPIsMonth
 };
+/* =========================================================
+   FIX KPI MÓVIL → Ingresos mes / Gastos mes / Balance mes
+   MISMA FÓRMULA QUE DESKTOP (renderReports)
+   (PÉGALO AL FINAL DE nexus-mobile-app.js)
+   ========================================================= */
+(function () {
+  const STORAGE_KEY = 'finanzas-state-v10';  // mismo que Desktop
+
+  // --- Helpers base (mismas firmas que en Desktop) ---
+  const toDate = (s) => new Date(s);
+  function inRange(d, from, to) {
+    const t = +toDate(d || '1970-01-01');
+    if (from && t < +toDate(from)) return false;
+    if (to && t > (+toDate(to) + 86400000 - 1)) return false;
+    return true;
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function fmt(n, cur) {
+    const val = Number(n || 0);
+    try {
+      return new Intl.NumberFormat('es-PR', {
+        style: 'currency',
+        currency: cur || 'USD'
+      }).format(val);
+    } catch {
+      return `${cur || 'USD'} ${val.toFixed(2)}`;
+    }
+  }
+
+  function sumRange(list, from, to) {
+    if (!Array.isArray(list)) return 0;
+    return list
+      .filter(r => inRange(r.date, from, to))
+      .reduce((a, b) => a + Number(b.amount || 0), 0);
+  }
+
+  function sumExpensesDailySplit(state, from, to) {
+    let recurrent = 0, nonRec = 0;
+    const isRec = (e) =>
+      e.method === 'Automático' ||
+      (e.desc || '').toLowerCase().startsWith('recurrente');
+    (state.expensesDaily || [])
+      .filter(e => inRange(e.date, from, to))
+      .forEach(e => {
+        const amt = Number(e.amount || 0);
+        if (isRec(e)) recurrent += amt;
+        else nonRec += amt;
+      });
+    return { total: recurrent + nonRec, recurrent, nonRecurrent: nonRec };
+  }
+
+  function sumPaymentsRange(state, from, to) {
+    return (state.payments || [])
+      .filter(p => inRange(p.date, from, to))
+      .reduce((a, b) => a + Number(b.amount || 0), 0);
+  }
+
+  function sumPersonalRange(state, from, to) {
+    return (state.personal || [])
+      .filter(p => inRange(p.date, from, to))
+      .reduce((a, b) => a + Number(b.amount || 0), 0);
+  }
+
+  // --- FIX principal: recalcular KPI del HOME móvil ---
+  function renderMobileMonthKPI() {
+    const state = loadState();
+    const currency = state.settings?.currency || 'USD';
+
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      .toISOString()
+      .slice(0, 10);
+
+    // 👉 MISMA LÓGICA QUE EN Desktop (renderReports → mes)
+    const incMonth  = sumRange(state.incomesDaily || [], monthStart, today);
+    const expSplit  = sumExpensesDailySplit(state, monthStart, today);
+    const perMonth  = sumPersonalRange(state, monthStart, today);
+    const payMonth  = sumPaymentsRange(state, monthStart, today);
+    const expMonth  = expSplit.total + perMonth + payMonth;
+    const balance   = incMonth - expMonth;
+
+    const incEl = document.getElementById('kpi-income-today');
+    const expEl = document.getElementById('kpi-expenses-today');
+    const balEl = document.getElementById('kpi-balance-today');
+
+    if (incEl) incEl.textContent = fmt(incMonth,  currency);
+    if (expEl) expEl.textContent = fmt(expMonth,  currency);
+    if (balEl) balEl.textContent = fmt(balance,   currency);
+  }
+
+  // Lo corremos al cargar y cada vez que vuelvas al HOME,
+  // puedes llamar window.refreshMobileMonthKPI() desde tu propio código si quieres.
+  document.addEventListener('DOMContentLoaded', renderMobileMonthKPI);
+  window.refreshMobileMonthKPI = renderMobileMonthKPI;
+})();
