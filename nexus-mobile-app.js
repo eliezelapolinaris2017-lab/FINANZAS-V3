@@ -1,5 +1,6 @@
 // nexus-mobile-app.js
-// Versión móvil Nexus Finance sincronizada con el Desktop (UID fijo)
+// Versión móvil sincronizada con el mismo documento de Firebase que el Desktop
+// UID FIJO (el que me diste): 7Si5WwQQLWRt4bhlQ59duPVVqSB2
 
 /* ===================== Firebase ===================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
@@ -38,13 +39,14 @@ const DEFAULT_STATE = {
   settings: {
     businessName: "Mi Negocio",
     currency: "USD",
-    logoBase64: ""          // 👈 importante para el logo en PDF
+    // 🔵 IMPORTANTE: aquí se va a guardar el logo en base64 que viene del Desktop
+    logoBase64: ""
   },
-  expensesDaily: [],
-  incomesDaily: [],
-  payments: [],
-  personal: [],
-  invoices: [],
+  expensesDaily: [],   // gastos de negocio
+  incomesDaily: [],    // ingresos
+  payments: [],        // nómina
+  personal: [],        // gastos personales
+  invoices: [],        // facturas
   quotes: [],
   _cloud: { updatedAt: 0 }
 };
@@ -57,7 +59,12 @@ function loadLocalState(){
   try{
     const st = JSON.parse(raw);
     const base = clone(DEFAULT_STATE);
-    return Object.assign(base, st);
+    // merge suave para no perder nuevos campos (logoBase64, etc)
+    return {
+      ...base,
+      ...st,
+      settings: { ...base.settings, ...(st.settings || {}) }
+    };
   }catch{
     return clone(DEFAULT_STATE);
   }
@@ -83,7 +90,7 @@ function toDate(s){
 function inRange(dateStr, from, to){
   const t = +toDate(dateStr);
   if(from && t < +toDate(from)) return false;
-  if(to   && t > (+toDate(to) + 86400000 - 1)) return false;
+  if(to && t > (+toDate(to) + 86400000 - 1)) return false;
   return true;
 }
 
@@ -141,7 +148,15 @@ async function cloudPullMobile(){
       return;
     }
     const remote = snap.data() || {};
-    state = Object.assign(clone(DEFAULT_STATE), remote);
+    // Mezclamos con DEFAULT_STATE para no romper nada
+    state = {
+      ...clone(DEFAULT_STATE),
+      ...remote,
+      settings: {
+        ...clone(DEFAULT_STATE).settings,
+        ...(remote.settings || {})
+      }
+    };
     toast("Datos traídos de la nube (Desktop)");
     saveLocal({skipCloud:true});
     renderAllMobile();
@@ -228,7 +243,8 @@ function wireCloudMobile(){
   });
 }
 
-/* ===================== KPIs (YTD igual que Desktop) ===================== */
+/* ===================== KPIs (Iguales a Desktop: YTD) ===================== */
+
 function sumRange(list, from, to){
   if(!Array.isArray(list)) return 0;
   return list
@@ -274,20 +290,21 @@ function renderKPIHomeMobile(){
   const today = now.toISOString().slice(0,10);
   const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().slice(0,10);
 
-  const incYTD      = sumRange(state.incomesDaily, yearStart, today);
+  // === YTD (igual que Desktop) ===
+  const incYTD = sumRange(state.incomesDaily, yearStart, today);
   const expSplitYTD = sumExpensesDailySplit(yearStart, today);
-  const perYTD      = sumPersonalRange(yearStart, today);
-  const payYTD      = sumPaymentsRange(yearStart, today);
+  const perYTD = sumPersonalRange(yearStart, today);
+  const payYTD = sumPaymentsRange(yearStart, today);
   const totalExpYTD = expSplitYTD.total + perYTD + payYTD;
-  const balanceYTD  = incYTD - totalExpYTD;
+  const balanceYTD = incYTD - totalExpYTD;
 
   const elInc = $("#kpi-income-today");
   const elExp = $("#kpi-expenses-today");
   const elBal = $("#kpi-balance-today");
 
-  if(elInc){ elInc.textContent = fmt(incYTD);      elInc.title = "Ingresos YTD (igual que desktop)"; }
+  if(elInc){ elInc.textContent = fmt(incYTD); elInc.title = "Ingresos YTD (igual que desktop)"; }
   if(elExp){ elExp.textContent = fmt(totalExpYTD); elExp.title = "Gastos YTD (igual que desktop)"; }
-  if(elBal){ elBal.textContent = fmt(balanceYTD);  elBal.title = "Balance YTD (igual que desktop)"; }
+  if(elBal){ elBal.textContent = fmt(balanceYTD); elBal.title = "Balance YTD (igual que desktop)"; }
 }
 
 /* ===================== HOME: facturas de hoy ===================== */
@@ -354,11 +371,6 @@ function wireNavigation(){
   $("#btnGoInvoice")?.addEventListener("click", ()=>{
     if($("#invDateMobile")) $("#invDateMobile").value = todayStr();
     showScreen("screen-invoice");
-  });
-
-  $("#btnGoHistory")?.addEventListener("click", ()=>{
-    showScreen("screen-history");
-    renderHistoryMobile();
   });
 
   $$(".btn-back").forEach(btn=>{
@@ -502,75 +514,291 @@ function calcInvoiceTotals(){
   if(tot) tot.textContent = items.length ? fmt(totals.total)      : "—";
 }
 
-/* ===================== jsPDF (PDF factura con logo) ===================== */
-let jsPDFLoaded = null;
+/* ===================== jsPDF + FACTURA PDF CON LOGO ===================== */
 
-async function getJsPDF(){
-  if(!jsPDFLoaded){
-    jsPDFLoaded = import("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js")
-      .then(mod => mod.jsPDF || mod.jspdf.jsPDF)
-      .catch(err => {
-        console.error("Error cargando jsPDF:", err);
-        toast("Error cargando módulo PDF");
-        throw err;
-      });
-  }
-  return jsPDFLoaded;
+let jsPDFReadyMobile = false;
+
+async function ensureJsPDFMobile(){
+  if(jsPDFReadyMobile) return;
+  await new Promise((res, rej)=>{
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
+    s.onload = res;
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  jsPDFReadyMobile = true;
 }
 
-async function generateInvoicePdfMobile(inv){
+async function generateInvoicePDFMobile(inv){
+  await ensureJsPDFMobile();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+  const business = state.settings?.businessName || "Mi Negocio";
+  const logo     = state.settings?.logoBase64 || ""; // 🔵 viene del Desktop
+  const title    = "FACTURA";
+
+  // HEADER CON LOGO
   try{
-    const jsPDF = await getJsPDF();
-    const doc = new jsPDF({ unit:"mm", format:"a4" });
-
-    const business = state.settings?.businessName || "Mi Negocio";
-    const logo     = state.settings?.logoBase64 || "";
-
-    // Header
     if(logo && logo.startsWith("data:")){
-      try{
-        doc.addImage(logo, "PNG", 14, 10, 24, 24);
-      }catch(e){
-        console.warn("No se pudo dibujar logo:", e);
-      }
+      // mismo estilo que desktop: logo 24x24mm aprox
+      doc.addImage(logo, "PNG", 14, 10, 24, 24);
     }
+  }catch(e){
+    console.warn("No se pudo dibujar el logo en PDF móvil:", e);
+  }
 
-    doc.setFont("helvetica","bold");
-    doc.setFontSize(16);
-    doc.text(business, 42, 18);
-    doc.setFontSize(12);
-    doc.text(`Factura #${inv.number || ""}`, 42, 25);
-    doc.setFontSize(10);
-    doc.text(`Fecha: ${inv.date || ""}`, 42, 31);
-    doc.line(14, 36, 200, 36);
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(0);
+  doc.setFontSize(16);
+  doc.text(business, 42, 18);
 
-    // Cliente
-    let y = 44;
-    doc.setFont("helvetica","bold");
-    doc.text("Cliente", 14, y);
-    doc.setFont("helvetica","normal"); y += 5;
-    if(inv.client?.name)  { doc.text(String(inv.client.name), 14, y); y += 5; }
-    if(inv.client?.phone) { doc.text(String(inv.client.phone), 14, y); y += 5; }
+  doc.setFontSize(12);
+  doc.text(title, 42, 26);
+  doc.line(14, 36, 200, 36);
 
-    // Tabla items
-    y += 3;
-    const headers = ["Descripción","Cant.","Precio","Imp %","Importe"];
-    const colW    = [90,20,30,20,20];
-    let x = 14;
+  let y = 42;
 
-    doc.setFont("helvetica","bold");
-    headers.forEach((h,i)=>{ doc.text(h, x, y); x += colW[i]; });
+  // Datos cliente
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(10);
+  doc.text("Para:", 14, y);
+  y += 6;
+  doc.setFont("helvetica","normal");
+  if(inv.client?.name){
+    doc.text(String(inv.client.name), 14, y); y += 6;
+  }
+  if(inv.client?.phone){
+    doc.text(String(inv.client.phone), 14, y); y += 6;
+  }
+
+  // Datos factura a la derecha
+  let ry = 42;
+  doc.setFont("helvetica","bold");
+  doc.text("Factura #", 200 - 70, ry);
+  doc.setFont("helvetica","normal");
+  doc.text(String(inv.number || ""), 200 - 20, ry, { align:"right" }); ry += 6;
+
+  doc.setFont("helvetica","bold");
+  doc.text("Fecha", 200 - 70, ry);
+  doc.setFont("helvetica","normal");
+  doc.text(String(inv.date || ""), 200 - 20, ry, { align:"right" }); ry += 6;
+
+  y = Math.max(y, 74);
+  doc.line(14, y, 200, y);
+  y += 6;
+
+  // Tabla de items
+  const headers = ["Descripción","Cant.","Precio","Imp %","Importe"];
+  const colW = [90, 20, 30, 20, 20];
+
+  doc.setFont("helvetica","bold");
+  let x = 14;
+  headers.forEach((h,i)=>{
+    doc.text(h, x, y);
+    x += colW[i];
+  });
+  y += 6;
+  doc.line(14, y, 200, y);
+  y += 6;
+  doc.setFont("helvetica","normal");
+
+  inv.items.forEach(it=>{
+    x = 14;
+    const base = (it.qty || 0) * (it.price || 0);
+    const tax  = base * ((it.tax || 0) / 100);
+    const amt  = base + tax;
+    const row = [
+      it.desc || "",
+      String(it.qty || 0),
+      Number(it.price || 0).toFixed(2),
+      String(it.tax || 0),
+      amt.toFixed(2)
+    ];
+    row.forEach((c,i)=>{
+      doc.text(String(c).slice(0,60), x, y);
+      x += colW[i];
+    });
     y += 6;
-    doc.line(14, y, 200, y);
-    y += 4;
-    doc.setFont("helvetica","normal");
+    if(y > 260){
+      doc.addPage(); y = 20;
+    }
+  });
 
-    inv.items.forEach(it=>{
-      x = 14;
-      const base = (it.qty || 0) * (it.price || 0);
-      const tax  = base * ((it.tax || 0) / 100);
-      const amt  = base + tax;
-      const row  = [
-        it.desc || "",
-        String(it.qty || 0),
-        Number(it.price
+  if(y + 30 > 290){
+    doc.addPage();
+    y = 20;
+  }
+
+  y += 4;
+  doc.line(120, y, 200, y);
+  y += 6;
+
+  doc.setFont("helvetica","bold");
+  doc.text("Subtotal", 150, y);
+  doc.setFont("helvetica","normal");
+  doc.text(fmt(inv.subtotal || 0), 198, y, { align:"right" });
+  y += 6;
+
+  doc.setFont("helvetica","bold");
+  doc.text("Impuestos", 150, y);
+  doc.setFont("helvetica","normal");
+  doc.text(fmt(inv.taxTotal || 0), 198, y, { align:"right" });
+  y += 6;
+
+  doc.setFont("helvetica","bold");
+  doc.text("TOTAL", 150, y);
+  doc.text(fmt(inv.total || 0), 198, y, { align:"right" });
+  y += 10;
+
+  if(inv.note){
+    doc.setFont("helvetica","bold");
+    doc.text("Nota:", 14, y);
+    doc.setFont("helvetica","normal");
+    doc.text(String(inv.note).slice(0,240), 14, y+6);
+    y += 12;
+  }
+
+  // Abrir en pestaña nueva
+  const pdfBlob = doc.output("blob");
+  const url = URL.createObjectURL(pdfBlob);
+  window.open(url, "_blank");
+  return url; // por si queremos usarlo luego
+}
+
+/* ===================== Factura rápida + WhatsApp ===================== */
+function wireInvoiceForm(){
+  const contItems = $("#invItemsContainer");
+  const btnAdd = $("#btnAddItem");
+  const btnCalc = $("#btnCalcInvoice");
+  const form = $("#formInvoice");
+  const btnSave = $("#btnSaveInvoice");
+  const btnWA = $("#btnSaveInvoiceWhatsApp");
+
+  if(btnAdd && contItems){
+    btnAdd.addEventListener("click", ()=>{
+      contItems.appendChild(createItemRow());
+      calcInvoiceTotals();
+    });
+  }
+
+  if(btnCalc){
+    btnCalc.addEventListener("click", calcInvoiceTotals);
+  }
+
+  if(form){
+    form.addEventListener("submit", (ev)=>{
+      ev.preventDefault();
+      saveInvoice(false);
+    });
+  }
+
+  if(btnSave){
+    btnSave.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      saveInvoice(false);
+    });
+  }
+
+  if(btnWA){
+    btnWA.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      saveInvoice(true);
+    });
+  }
+}
+
+async function saveInvoice(openWhatsApp){
+  const date   = $("#invDateMobile")?.value || todayStr();
+  const number = $("#invNumberMobile")?.value || "";
+  const client = $("#invClientMobile")?.value || "";
+  const phone  = ($("#invPhoneMobile")?.value || "").replace(/[^\d]/g,"");
+  const method = $("#invMethodMobile")?.value || "";
+  const note   = $("#invNoteMobile")?.value || "";
+
+  const items = getItemsFromDOM();
+  const totals = calcTotals(items);
+
+  if(!date || !number){
+    toast("Fecha y número de factura son requeridos");
+    return;
+  }
+  if(!items.length){
+    toast("Agrega al menos 1 ítem");
+    return;
+  }
+
+  const inv = {
+    id: Date.now().toString(36),
+    date,
+    number,
+    method,
+    client: { name: client, phone },
+    items,
+    subtotal: totals.subtotal,
+    taxTotal: totals.taxTotal,
+    total: totals.total,
+    note
+  };
+
+  // Registrar como factura
+  state.invoices.push(inv);
+
+  // Registrar ingreso asociado
+  state.incomesDaily.push({
+    id: Date.now().toString(36) + "_inc",
+    date,
+    client,
+    method,
+    amount: totals.total,
+    invoiceNumber: number
+  });
+
+  toast("Factura guardada y registrada en Ingresos");
+  saveLocal();
+
+  // Limpiar formulario
+  const contItems = $("#invItemsContainer");
+  if(contItems) contItems.innerHTML = "";
+  $("#formInvoice")?.reset();
+  $("#invDateMobile").value = todayStr();
+  calcInvoiceTotals();
+
+  // 🔵 Generar PDF y abrirlo en pestaña nueva
+  await generateInvoicePDFMobile(inv);
+
+  // WhatsApp (solo texto, igual que antes)
+  if(openWhatsApp && phone){
+    const msg = `Saludos, aquí el total de su factura #${number}: ${fmt(totals.total)}. Gracias por su confianza.`;
+    const urlWA = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(urlWA, "_blank");
+  }else if(openWhatsApp){
+    toast("No hay teléfono para WhatsApp");
+  }
+}
+
+/* ===================== Render global ===================== */
+function renderAllMobile(){
+  renderKPIHomeMobile();
+  renderTodayInvoices();
+}
+
+/* ===================== INIT ===================== */
+function initMobileApp(){
+  wireNavigation();
+  wireCloudMobile();
+  wireIncomeForm();
+  wireExpenseForm();
+  wireInvoiceForm();
+
+  // Opcional: podrías forzar que siempre jale desde nube al abrir
+  // cloudPullMobile();
+
+  const chk = $("#chkAutosyncMobile");
+  if(chk) chk.checked = cloud.autosync;
+
+  renderAllMobile();
+}
+
+document.addEventListener("DOMContentLoaded", initMobileApp);
