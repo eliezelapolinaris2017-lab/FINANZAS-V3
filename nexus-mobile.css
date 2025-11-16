@@ -1,358 +1,444 @@
-/* =========================================================
-   NEXUS FINANCE — MÓVIL
-   UI optimizada 100% mobile-first
-   ========================================================= */
-
-:root {
-  --bg: #0c0f15;
-  --bg-card: #11151c;
-  --text: #f2f3f5;
-  --text-dim: #9aa0ad;
-  --accent: #c7a24b;
-  --accent-dark: #a58439;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --shadow: 0 6px 18px rgba(0,0,0,0.35);
+/* ====== Reset básico ====== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-* {
-  box-sizing: border-box;
+html,
+body {
   margin: 0;
   padding: 0;
-  -webkit-tap-highlight-color: transparent;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  background: #05060a;
+  color: #f7f7ff;
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Inter", system-ui, sans-serif;
-  padding: 10px;
-  overflow-x: hidden;
+  min-height: 100vh;
 }
 
-.mobile-app {
-  max-width: 520px;
-  margin: auto;
-}
-
-/* =========================================================
-   HEADER
-   ========================================================= */
+/* ====== Layout general ====== */
 .app-header {
-  padding: 10px 0 20px;
+  padding: 16px 16px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.app-brand {
+.app-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.brand-logo {
-  width: 50px;
-  height: 50px;
+.app-logo-circle {
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  object-fit: contain;
-  background: #0b0d10;
-  border: 1px solid rgba(255,255,255,0.08);
+  background: radial-gradient(circle at 0 0, #ffd86f, #c79b2e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.brand-title {
-  font-size: 1.4rem;
+.app-logo-text {
   font-weight: 700;
+  color: #05060a;
+  font-size: 18px;
 }
 
-.brand-sub {
-  font-size: .85rem;
-  color: var(--text-dim);
+.app-title {
+  font-size: 20px;
+  margin: 0;
 }
 
-/* =========================================================
-   SCREENS
-   ========================================================= */
+.app-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #a4b0be;
+}
+
+main {
+  padding: 0 12px 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ====== Screens ====== */
 .screen {
   display: none;
-  padding-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .screen.active {
   display: block;
 }
 
-/* =========================================================
-   KPI CARDS
-   ========================================================= */
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.kpi-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 12px;
-  text-align: center;
-  box-shadow: var(--shadow);
-}
-
-.kpi-label {
-  color: var(--text-dim);
-  font-size: .85rem;
-}
-
-.kpi-value {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-top: 4px;
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-button {
-  font-family: inherit;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-primary {
-  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
-  color: #101214;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  width: 100%;
-  font-size: 1rem;
-}
-
-.btn-primary:active {
-  transform: scale(.98);
-}
-
-.btn-outline {
-  background: #151922;
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--text);
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  width: 100%;
-}
-
-.btn-outline:active {
-  transform: scale(.98);
-}
-
-.btn-back {
-  background: none;
-  color: var(--accent);
-  font-size: 1.5rem;
-  border: none;
-  margin-right: 8px;
-}
-
-/* Buttons main block */
-.btn-group-main > button {
-  margin-bottom: 12px;
-}
-
-/* Vertical group (factura) */
-.btn-group-vertical > button {
-  margin-bottom: 12px;
-}
-
-/* =========================================================
-   FORMS
-   ========================================================= */
-.form-grid {
-  display: grid;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  font-size: .9rem;
-  gap: 6px;
-}
-
-input, select {
-  background: #0f141c;
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 1rem;
-  width: 100%;
-}
-
-input::placeholder {
-  color: #757c89;
-}
-
-/* =========================================================
-   CARDS
-   ========================================================= */
+/* ====== Cards ====== */
 .card {
-  background: var(--bg-card);
-  padding: 16px;
-  border-radius: var(--radius);
-  margin-bottom: 20px;
-  box-shadow: var(--shadow);
+  background: #0b0d13;
+  border-radius: 16px;
+  padding: 14px 14px 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.card-title {
+  margin: 0 0 10px;
+  font-size: 16px;
 }
 
 .card-title-row {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 10px;
+}
+
+.card-title-row h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.card-footer {
+  text-align: center;
+}
+
+.footer-text {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #b2bec3;
+}
+
+/* ====== KPI ====== */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   margin-bottom: 14px;
 }
 
-.card h2 {
-  font-size: 1.2rem;
+.kpi-card {
+  background: radial-gradient(circle at 0 0, #20232b, #141822);
+  padding: 10px;
+  border-radius: 12px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-/* =========================================================
-   INVOICES LIST (HOME)
-   ========================================================= */
-.invoice-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+.kpi-label {
+  font-size: 11px;
+  color: #a4b0be;
+  margin-bottom: 4px;
 }
 
-.invoice-main {
-  display: flex;
-  flex-direction: column;
-  font-size: .9rem;
+.kpi-value {
+  font-weight: 700;
+  font-size: 14px;
 }
 
-.invoice-amount {
-  font-size: .95rem;
-  color: var(--accent);
+/* ====== Botones ====== */
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
 }
 
-/* =========================================================
-   INVOICE FORM (MOBILE SAFE)
-   ========================================================= */
-.items-container {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.item-row {
-  background: #0f141c;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Descripción arriba */
-.item-desc {
+.block {
   width: 100%;
 }
 
-/* Cant, precio, impuesto juntos pero adaptativos */
-.item-row-inline {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 8px;
-  align-items: center;
+.btn-primary {
+  background: linear-gradient(135deg, #ffd86f, #c79b2e);
+  color: #05060a;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 15px;
+  margin-top: 6px;
 }
 
-.btn-remove-item {
-  background: #2b2f39;
-  color: #fff;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 1rem;
+.btn-primary:active {
+  transform: translateY(1px);
 }
 
-/* TOTALES (siempre responsivo) */
-.totals-box {
-  margin-top: 16px;
-  padding: 14px;
-  background: #0f141c;
-  border-radius: var(--radius-sm);
+.btn-secondary {
+  background: #171b24;
+  color: #f7f7ff;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-top: 6px;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #ffd86f;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 14px;
+  border: 1px solid rgba(255, 216, 111, 0.6);
+  margin-top: 6px;
+}
+
+.btn-row {
+  margin-top: 6px;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f7f7ff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.btn-pill {
+  background: rgba(255, 216, 111, 0.1);
+  color: #ffd86f;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* ====== Formularios ====== */
+.form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field span {
+  font-size: 13px;
+  color: #dcdde1;
+}
+
+input,
+select,
+textarea {
+  background: #10131b;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 10px;
+  color: #f7f7ff;
+  font-size: 14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #ffd86f;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.form-row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ====== Lista de hoy ====== */
+.today-list-body {
+  font-size: 14px;
+}
+
+.list-empty {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.simple-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.simple-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.simple-list .line-1 {
+  font-size: 14px;
+}
+
+.simple-list .line-2 {
+  font-size: 12px;
+  color: #a4b0be;
+}
+
+/* ====== Sync ====== */
+.sync-status {
+  font-size: 13px;
+  color: #a4b0be;
+  margin: 0 0 6px;
+}
+
+.autosync-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #f7f7ff;
+}
+
+/* ====== Items de factura ====== */
+.items-container {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inv-item-row {
+  background: #0c1019;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.inv-item-row .row {
+  margin-bottom: 6px;
+}
+
+.inv-item-row .row.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.inv-item-row input {
+  font-size: 13px;
+}
+
+/* ====== Totales ====== */
+.totals-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #0f131c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
 }
 
 .totals-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: .95rem;
+  margin-bottom: 4px;
 }
 
-.total-final {
-  font-weight: 700;
-  color: var(--accent);
+.totals-row-total {
+  border-top: 1px dashed rgba(255, 255, 255, 0.18);
+  padding-top: 4px;
 }
 
-/* =========================================================
-   SYNC CARD
-   ========================================================= */
-.sync-card {
-  padding: 16px;
-}
-
-.sync-buttons > button {
-  margin-bottom: 10px;
-}
-
-.sync-status {
-  margin-top: 10px;
-  font-size: .8rem;
-  color: var(--text-dim);
-}
-
-/* =========================================================
-   LINK CARD
-   ========================================================= */
-.card-link {
-  text-align: center;
-}
-
-.card-text-small {
-  color: var(--text-dim);
-  font-size: .9rem;
+/* ====== Historial ====== */
+.history-tabs,
+.history-filters {
+  display: flex;
+  gap: 6px;
   margin-bottom: 8px;
 }
 
-.btn-link {
-  color: var(--accent);
-  font-size: 1rem;
+.history-tabs .htab,
+.history-filters .hfilter {
+  flex: 1;
+  background: #111521;
+  color: #dcdde1;
+  border-radius: 999px;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid transparent;
+}
+
+.history-tabs .htab.active,
+.history-filters .hfilter.active {
+  border-color: #ffd86f;
+  color: #ffd86f;
+}
+
+.history-list {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.history-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.history-item strong {
+  display: block;
+  font-size: 14px;
+}
+
+.history-item small {
+  display: block;
+  color: #95a5a6;
+  margin-top: 2px;
+}
+
+.history-buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* ====== Toast ====== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  background: rgba(15, 15, 20, 0.94);
+  color: #f7f7ff;
+  border-radius: 999px;
+  font-size: 13px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 999;
+}
+
+/* ====== Links ====== */
+.link-primary {
+  color: #ffd86f;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-primary:hover {
   text-decoration: underline;
 }
 
-/* =========================================================
-   TOAST
-   ========================================================= */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(30px);
-  background: #11141b;
-  padding: 12px 18px;
-  border-radius: 12px;
-  color: #fff;
-  font-size: .95rem;
-  opacity: 0;
-  transition: .25s;
-  box-shadow: var(--shadow);
-  max-width: 90%;
-  text-align: center;
-}
-
-.toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+/* ====== Responsive pequeño ====== */
+@media (max-width: 360px) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
 }
