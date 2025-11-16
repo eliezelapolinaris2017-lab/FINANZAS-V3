@@ -2,167 +2,149 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Finance – Panel móvil</title>
-
-  <link rel="stylesheet" href="styles.css?v=1" />
+  <title>Nexus Finance Móvil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="nexus-mobile.css?v=2">
 </head>
 <body>
-  <header class="app-header">
-    <div class="app-header-left">
-      <div class="app-logo-circle">
-        <span class="app-logo-text">NF</span>
-      </div>
-      <div>
-        <h1 class="app-title">Nexus Finance</h1>
-        <p class="app-subtitle">Panel rápido móvil</p>
-      </div>
-    </div>
-  </header>
+  <div class="mobile-app">
 
-  <main>
-    <!-- ========== HOME / DASHBOARD ========== -->
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="app-brand">
+        <img src="assets/logo.png" alt="Logo" class="brand-logo">
+        <div>
+          <h1 class="brand-title">Nexus Finance</h1>
+          <p class="brand-sub">Panel rápido móvil</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- RESUMEN HOY -->
     <section id="screen-home" class="screen active">
-      <div class="kpi-row">
+      <div class="summary-grid">
         <div class="kpi-card">
-          <div class="kpi-label">Ingresos hoy</div>
-          <div class="kpi-value" id="kpi-income-today">$0.00</div>
+          <span class="kpi-label">Ingresos hoy</span>
+          <span id="kpi-income-today" class="kpi-value">—</span>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Gastos hoy</div>
-          <div class="kpi-value" id="kpi-expenses-today">$0.00</div>
+          <span class="kpi-label">Gastos hoy</span>
+          <span id="kpi-expenses-today" class="kpi-value">—</span>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Balance hoy</div>
-          <div class="kpi-value" id="kpi-balance-today">$0.00</div>
+          <span class="kpi-label">Balance hoy</span>
+          <span id="kpi-balance-today" class="kpi-value">—</span>
         </div>
       </div>
 
-      <div class="card">
-        <button id="btnGoIncome" class="btn-primary block">+ Ingreso rápido</button>
-        <button id="btnGoExpense" class="btn-secondary block">+ Gasto rápido</button>
-        <button id="btnGoInvoice" class="btn-primary block">🧾 Nueva factura</button>
+      <div class="btn-group-main">
+        <button id="btnGoIncome"  class="btn-primary">+ Ingreso rápido</button>
+        <button id="btnGoExpense" class="btn-outline">+ Gasto rápido</button>
+        <button id="btnGoInvoice" class="btn-primary">🧾 Nueva factura</button>
       </div>
 
-      <div class="card">
-        <h2 class="card-title">Facturas de hoy</h2>
-        <div id="todayInvoices" class="today-list-body">
+      <div class="today-list card">
+        <div class="card-title-row">
+          <h2>Facturas de hoy</h2>
+        </div>
+        <div id="todayInvoices" class="list-empty">
           No hay facturas registradas hoy.
         </div>
       </div>
 
-      <div class="card">
-        <h2 class="card-title">Sincronización en la nube</h2>
-        <p id="syncStatusMobile" class="sync-status">Sin conexión</p>
-        <div class="btn-row">
-          <button id="btnSignInMobile" class="btn-secondary block">Iniciar sesión</button>
-          <button id="btnSignOutMobile" class="btn-secondary block">Cerrar sesión</button>
+      <!-- 🔵 TARJETA: Sincronización con Firebase -->
+      <div class="card sync-card">
+        <div class="card-title-row">
+          <h2>Sincronización en la nube</h2>
         </div>
-        <div class="btn-row">
-          <button id="btnSyncPullMobile" class="btn-outline block">Traer datos de la nube</button>
-          <button id="btnSyncPushMobile" class="btn-outline block">Enviar datos a la nube</button>
+        <div class="sync-buttons">
+          <button id="btnSignInMobile"  class="btn-outline full-width">Conectar con Google</button>
+          <button id="btnSignOutMobile" class="btn-outline full-width" style="display:none;">Cerrar sesión</button>
+          <button id="btnSyncPullMobile" class="btn-outline full-width">Traer datos de la nube</button>
+          <button id="btnSyncPushMobile" class="btn-outline full-width">Enviar datos a la nube</button>
+
+          <label class="sync-autoswitch">
+            <input type="checkbox" id="chkAutosyncMobile">
+            <span>AutoSync</span>
+          </label>
+
+          <div id="syncStatusMobile" class="sync-status">
+            Sin conexión
+          </div>
         </div>
-        <label class="autosync-row">
-          <input type="checkbox" id="chkAutosyncMobile" />
-          <span>AutoSync</span>
-        </label>
       </div>
 
-      <div class="card">
-        <button id="btnGoHistory" class="btn-outline block">📊 Historial rápido</button>
-      </div>
-
-      <div class="card card-footer">
-        <p class="footer-text">
+      <div class="card card-link">
+        <p class="card-text-small">
           ¿Necesitas todas las funciones (Firebase, reportes, historial completo)?
         </p>
-        <a href="https://finanzas-web.oasisservicespr.com" class="link-primary" target="_blank">
-          Abrir versión completa de Nexus
-        </a>
+        <a href="index.html" class="btn-link">Abrir versión completa de Nexus</a>
       </div>
     </section>
 
-    <!-- ========== PANTALLA: INGRESO RÁPIDO ========== -->
+    <!-- INgreso rápido -->
     <section id="screen-income" class="screen">
       <div class="card">
         <div class="card-title-row">
           <button class="btn-back" data-back="home">←</button>
-          <h2>Ingreso rápido</h2>
+          <h2>Nuevo ingreso rápido</h2>
         </div>
-
-        <form id="formIncome" class="form">
-          <label class="field">
-            <span>Fecha</span>
-            <input type="date" id="incDateMobile" required />
+        <form id="formIncome" class="form-grid">
+          <label>Fecha
+            <input type="date" id="incDateMobile">
           </label>
-
-          <label class="field">
-            <span>Cliente / Detalle</span>
-            <input type="text" id="incClientMobile" placeholder="Nombre o descripción" />
+          <label>Cliente / origen
+            <input type="text" id="incClientMobile" placeholder="Nombre o referencia">
           </label>
-
-          <label class="field">
-            <span>Método de pago</span>
+          <label>Método
             <select id="incMethodMobile">
-              <option value="">Seleccionar…</option>
-              <option>EFECTIVO</option>
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
               <option>ATH Móvil</option>
-              <option>TARJETA</option>
-              <option>TRANSFERENCIA</option>
+              <option>Transferencia</option>
+              <option>Cheque</option>
             </select>
           </label>
-
-          <label class="field">
-            <span>Monto</span>
-            <input type="number" step="0.01" id="incAmountMobile" required />
+          <label>Monto
+            <input type="number" step="0.01" id="incAmountMobile" placeholder="0.00">
           </label>
-
-          <button type="submit" class="btn-primary block">Guardar ingreso</button>
+          <button class="btn-primary full-width" type="submit">Guardar ingreso</button>
         </form>
       </div>
     </section>
 
-    <!-- ========== PANTALLA: GASTO RÁPIDO ========== -->
+    <!-- Gasto rápido -->
     <section id="screen-expense" class="screen">
       <div class="card">
         <div class="card-title-row">
           <button class="btn-back" data-back="home">←</button>
-          <h2>Gasto rápido</h2>
+          <h2>Nuevo gasto rápido</h2>
         </div>
-
-        <form id="formExpense" class="form">
-          <label class="field">
-            <span>Fecha</span>
-            <input type="date" id="expDateMobile" required />
+        <form id="formExpense" class="form-grid">
+          <label>Fecha
+            <input type="date" id="expDateMobile">
           </label>
-
-          <label class="field">
-            <span>Categoría</span>
-            <input type="text" id="expCategoryMobile" placeholder="Ej. Combustible, materiales…" />
+          <label>Categoría
+            <input type="text" id="expCategoryMobile" placeholder="Ej. Gasolina, Comida, etc.">
           </label>
-
-          <label class="field">
-            <span>Método de pago</span>
+          <label>Método
             <select id="expMethodMobile">
-              <option value="">Seleccionar…</option>
-              <option>EFECTIVO</option>
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
               <option>ATH Móvil</option>
-              <option>TARJETA</option>
-              <option>TRANSFERENCIA</option>
+              <option>Transferencia</option>
+              <option>Cheque</option>
             </select>
           </label>
-
-          <label class="field">
-            <span>Monto</span>
-            <input type="number" step="0.01" id="expAmountMobile" required />
+          <label>Monto
+            <input type="number" step="0.01" id="expAmountMobile" placeholder="0.00">
           </label>
-
-          <button type="submit" class="btn-primary block">Guardar gasto</button>
+          <button class="btn-outline full-width" type="submit">Guardar gasto</button>
         </form>
       </div>
     </section>
 
-    <!-- ========== PANTALLA: NUEVA FACTURA ========== -->
+    <!-- NUEVA FACTURA -->
     <section id="screen-invoice" class="screen">
       <div class="card">
         <div class="card-title-row">
@@ -170,49 +152,37 @@
           <h2>Nueva factura</h2>
         </div>
 
-        <form id="formInvoice" class="form">
-          <div class="form-row-two">
-            <label class="field">
-              <span>Fecha</span>
-              <input type="date" id="invDateMobile" required />
-            </label>
-
-            <label class="field">
-              <span>Número</span>
-              <input type="text" id="invNumberMobile" placeholder="#12345" required />
-            </label>
-          </div>
-
-          <label class="field">
-            <span>Cliente</span>
-            <input type="text" id="invClientMobile" placeholder="Nombre del cliente" />
+        <form id="formInvoice" class="form-grid">
+          <label>Fecha
+            <input type="date" id="invDateMobile">
           </label>
-
-          <label class="field">
-            <span>Teléfono (WhatsApp)</span>
-            <input type="tel" id="invPhoneMobile" placeholder="7871234567" />
+          <label># Factura
+            <input type="text" id="invNumberMobile" placeholder="Ej. 000123">
           </label>
-
-          <label class="field">
-            <span>Método de pago</span>
+          <label>Cliente
+            <input type="text" id="invClientMobile" placeholder="Nombre del cliente">
+          </label>
+          <label>Teléfono (WhatsApp)
+            <input type="tel" id="invPhoneMobile" placeholder="Ej. 17871234567">
+          </label>
+          <label>Método de pago
             <select id="invMethodMobile">
-              <option value="">Seleccionar…</option>
-              <option>EFECTIVO</option>
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
               <option>ATH Móvil</option>
-              <option>TARJETA</option>
-              <option>TRANSFERENCIA</option>
+              <option>Transferencia</option>
+              <option>Cheque</option>
             </select>
           </label>
 
-          <div class="field">
-            <div class="field-label-row">
-              <span>Ítems</span>
-              <button type="button" id="btnAddItem" class="btn-pill">+ Añadir ítem</button>
+          <div class="subsection">
+            <div class="subsection-header">
+              <span>Ítems de la factura</span>
+              <button type="button" id="btnAddItem" class="btn-outline btn-small">+ Ítem</button>
             </div>
-            <div id="invItemsContainer" class="items-container"></div>
-            <button type="button" id="btnCalcInvoice" class="btn-outline block">
-              Recalcular totales
-            </button>
+            <div id="invItemsContainer" class="items-container">
+              <!-- filas dinámicas -->
+            </div>
           </div>
 
           <div class="totals-box">
@@ -224,58 +194,37 @@
               <span>Impuestos</span>
               <strong id="invTaxMobile">—</strong>
             </div>
-            <div class="totals-row totals-row-total">
+            <div class="totals-row total-final">
               <span>Total</span>
               <strong id="invTotalMobile">—</strong>
             </div>
           </div>
 
-          <label class="field">
-            <span>Nota en la factura</span>
-            <textarea id="invNoteMobile" rows="3" placeholder="Gracias por su confianza…"></textarea>
+          <label>Nota
+            <input type="text" id="invNoteMobile" placeholder="Nota opcional">
           </label>
 
-          <div class="btn-row">
-            <button id="btnSaveInvoice" class="btn-primary block" type="button">
-              Guardar factura (solo registro)
+          <div class="btn-group-vertical">
+            <button type="button" id="btnCalcInvoice" class="btn-outline full-width">
+              Calcular totales
             </button>
-          </div>
-          <div class="btn-row">
-            <button id="btnSaveInvoiceWhatsApp" class="btn-secondary block" type="button">
-              Guardar + Ver PDF + Enviar por WhatsApp
+            <button type="submit" id="btnSaveInvoice" class="btn-primary full-width">
+              Guardar factura
+            </button>
+            <button type="button" id="btnSaveInvoiceWhatsApp" class="btn-primary full-width">
+              Guardar y abrir WhatsApp
             </button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- ========== PANTALLA: HISTORIAL RÁPIDO ========== -->
-    <section id="screen-history" class="screen">
-      <div class="card">
-        <div class="card-title-row">
-          <button class="btn-back" data-back="home">←</button>
-          <h2>Historial rápido</h2>
-        </div>
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
 
-        <div class="history-tabs">
-          <button class="htab active" data-type="inc">Ingresos</button>
-          <button class="htab" data-type="exp">Gastos</button>
-          <button class="htab" data-type="inv">Facturas</button>
-        </div>
+  </div>
 
-        <div class="history-filters">
-          <button class="hfilter active" data-range="today">Hoy</button>
-          <button class="hfilter" data-range="week">Semana</button>
-          <button class="hfilter" data-range="month">Mes</button>
-          <button class="hfilter" data-range="all">Todo</button>
-        </div>
-
-        <div id="historyList" class="history-list">No hay registros.</div>
-      </div>
-    </section>
-  </main>
-
-  <!-- js principal -->
+  <!-- AHORA ES MÓDULO -->
   <script type="module" src="nexus-mobile-app.js?v=2"></script>
 </body>
 </html>
