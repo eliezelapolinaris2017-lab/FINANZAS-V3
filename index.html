@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Nexus Finance</title>
+  <meta name="theme-color" content="#050505" />
+  <meta name="description" content="Sistema financiero moderno para ingresos, gastos, facturas, cotizaciones y reportes." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+      <div class="brand-mark">N</div>
+      <h1>Nexus Finance</h1>
+      <p id="lockHint">Introduce tu PIN para continuar</p>
+      <form id="pinForm">
+        <input id="pinInput" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" />
+        <input id="pinConfirm" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="Confirmar PIN" hidden />
+        <button class="btn primary full" type="submit">Entrar</button>
+      </form>
+      <button id="resetPinBtn" class="link-btn" type="button">Restablecer PIN</button>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-head">
+        <div class="brand-mark small">N</div>
+        <div>
+          <strong id="brandName">Nexus Finance</strong>
+          <span>Sistema financiero</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="home">🏠 Inicio</button>
+        <button class="nav-btn" data-view="income">💰 Ingresos</button>
+        <button class="nav-btn" data-view="expense">💸 Gastos</button>
+        <button class="nav-btn" data-view="invoice">🧾 Facturas</button>
+        <button class="nav-btn" data-view="quote">📋 Cotizaciones</button>
+        <button class="nav-btn" data-view="history">📜 Historial</button>
+        <button class="nav-btn" data-view="reports">📊 Reportes</button>
+        <button class="nav-btn" data-view="settings">⚙️ Configuración</button>
+      </nav>
+      <button id="logoutBtn" class="btn ghost full">Cerrar sesión</button>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn">☰</button>
+        <div>
+          <h2 id="viewTitle">Inicio</h2>
+          <p id="todayLabel"></p>
+        </div>
+        <button id="quickPdfBtn" class="btn ghost">PDF</button>
+      </header>
+
+      <section id="home" class="view visible">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">Panel rápido</p>
+            <h1>Control financiero sin teatro.</h1>
+            <p>Ingresos, gastos, facturas y reportes en una sola operación limpia.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn primary" data-jump="income">+ Ingreso</button>
+            <button class="btn danger" data-jump="expense">+ Gasto</button>
+            <button class="btn" data-jump="invoice">Nueva factura</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <article class="kpi"><span>Ingresos mes</span><strong id="kpiIncome">—</strong></article>
+          <article class="kpi"><span>Gastos mes</span><strong id="kpiExpense">—</strong></article>
+          <article class="kpi"><span>Balance mes</span><strong id="kpiBalance">—</strong></article>
+          <article class="kpi"><span>Facturado mes</span><strong id="kpiInvoices">—</strong></article>
+        </div>
+
+        <div class="panel two-col">
+          <div>
+            <div class="panel-head"><h3>Actividad reciente</h3></div>
+            <div id="recentList" class="list empty">Sin movimientos todavía.</div>
+          </div>
+          <div>
+            <div class="panel-head"><h3>Facturas de hoy</h3></div>
+            <div id="todayInvoices" class="list empty">No hay facturas registradas hoy.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="income" class="view">
+        <form id="incomeForm" class="panel form-grid">
+          <div class="panel-head"><h3>Nuevo ingreso</h3></div>
+          <label>Fecha<input id="incomeDate" type="date" required /></label>
+          <label>Cliente / origen<input id="incomeSource" placeholder="Ej. Cliente, servicio, venta" /></label>
+          <label>Método<select id="incomeMethod"></select></label>
+          <label>Referencia<input id="incomeRef" placeholder="Opcional" /></label>
+          <label>Monto<input id="incomeAmount" type="number" step="0.01" required /></label>
+          <button class="btn primary">Guardar ingreso</button>
+        </form>
+        <div class="panel"><div class="panel-head"><h3>Ingresos</h3><strong id="incomeTotal">—</strong></div><div class="table-wrap"><table id="incomeTable"><thead><tr><th>Fecha</th><th>Origen</th><th>Método</th><th>Ref</th><th>Monto</th><th></th></tr></thead><tbody></tbody></table></div></div>
+      </section>
+
+      <section id="expense" class="view">
+        <form id="expenseForm" class="panel form-grid">
+          <div class="panel-head"><h3>Nuevo gasto</h3></div>
+          <label>Fecha<input id="expenseDate" type="date" required /></label>
+          <label>Categoría<select id="expenseCategory"></select></label>
+          <label>Método<select id="expenseMethod"></select></label>
+          <label>Referencia<input id="expenseRef" placeholder="Recibo, cheque, etc." /></label>
+          <label>Descripción<input id="expenseDesc" placeholder="Detalle corto" /></label>
+          <label>Monto<input id="expenseAmount" type="number" step="0.01" required /></label>
+          <button class="btn danger">Guardar gasto</button>
+        </form>
+        <div class="panel"><div class="panel-head"><h3>Gastos</h3><strong id="expenseTotal">—</strong></div><div class="table-wrap"><table id="expenseTable"><thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Método</th><th>Monto</th><th></th></tr></thead><tbody></tbody></table></div></div>
+      </section>
+
+      <section id="invoice" class="view">
+        <form id="invoiceForm" class="panel doc-form">
+          <div class="panel-head"><h3>Nueva factura</h3><button id="addInvoiceItem" class="btn ghost" type="button">+ Ítem</button></div>
+          <div class="form-grid compact">
+            <label>Fecha<input id="invoiceDate" type="date" required /></label>
+            <label>Vence<input id="invoiceDue" type="date" /></label>
+            <label># Factura<input id="invoiceNumber" required /></label>
+            <label>Cliente<input id="invoiceClient" required /></label>
+            <label>Email<input id="invoiceEmail" type="email" /></label>
+            <label>WhatsApp<input id="invoicePhone" /></label>
+            <label>Dirección<input id="invoiceAddress" /></label>
+            <label>Método<select id="invoiceMethod"></select></label>
+          </div>
+          <div class="table-wrap"><table id="invoiceItems"><thead><tr><th>Descripción</th><th>Cant.</th><th>Precio</th><th>Imp %</th><th>Importe</th><th></th></tr></thead><tbody></tbody></table></div>
+          <div class="totals"><span>Subtotal <b id="invoiceSubtotal">—</b></span><span>Impuestos <b id="invoiceTax">—</b></span><span>Total <b id="invoiceTotal">—</b></span></div>
+          <label>Nota<textarea id="invoiceNote" rows="2"></textarea></label>
+          <label>Términos<textarea id="invoiceTerms" rows="2">Pago al recibir. Gracias por su confianza.</textarea></label>
+          <div class="actions"><button id="calcInvoiceBtn" class="btn ghost" type="button">Calcular</button><button class="btn primary">Guardar factura</button><button id="saveInvoiceWhatsapp" class="btn" type="button">Guardar y WhatsApp</button></div>
+        </form>
+      </section>
+
+      <section id="quote" class="view">
+        <form id="quoteForm" class="panel doc-form">
+          <div class="panel-head"><h3>Nueva cotización</h3><button id="addQuoteItem" class="btn ghost" type="button">+ Ítem</button></div>
+          <div class="form-grid compact">
+            <label>Fecha<input id="quoteDate" type="date" required /></label>
+            <label>Válida hasta<input id="quoteValid" type="date" /></label>
+            <label># Cotización<input id="quoteNumber" required /></label>
+            <label>Cliente<input id="quoteClient" required /></label>
+            <label>Email<input id="quoteEmail" type="email" /></label>
+            <label>WhatsApp<input id="quotePhone" /></label>
+            <label>Dirección<input id="quoteAddress" /></label>
+            <label>Método<select id="quoteMethod"></select></label>
+          </div>
+          <div class="table-wrap"><table id="quoteItems"><thead><tr><th>Descripción</th><th>Cant.</th><th>Precio</th><th>Imp %</th><th>Importe</th><th></th></tr></thead><tbody></tbody></table></div>
+          <div class="totals"><span>Subtotal <b id="quoteSubtotal">—</b></span><span>Impuestos <b id="quoteTax">—</b></span><span>Total <b id="quoteTotal">—</b></span></div>
+          <label>Nota<textarea id="quoteNote" rows="2"></textarea></label>
+          <label>Términos<textarea id="quoteTerms" rows="2">Cotización sujeta a evaluación final y disponibilidad.</textarea></label>
+          <div class="actions"><button id="calcQuoteBtn" class="btn ghost" type="button">Calcular</button><button class="btn primary">Guardar cotización</button></div>
+        </form>
+      </section>
+
+      <section id="history" class="view">
+        <div class="panel">
+          <div class="panel-head"><h3>Historial</h3><input id="historySearch" class="search" placeholder="Buscar cliente, número o fecha" /></div>
+          <div class="tabs"><button class="tab active" data-history="invoices">Facturas</button><button class="tab" data-history="quotes">Cotizaciones</button></div>
+          <div class="table-wrap"><table id="historyTable"><thead><tr><th>Fecha</th><th>#</th><th>Cliente</th><th>Total</th><th>Estado</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="reports" class="view">
+        <div class="panel">
+          <div class="panel-head"><h3>Reportes</h3><button id="exportPdfBtn" class="btn primary">Exportar PDF</button></div>
+          <div class="kpi-grid compact-kpi">
+            <article class="kpi"><span>Hoy</span><strong id="repToday">—</strong></article>
+            <article class="kpi"><span>Semana</span><strong id="repWeek">—</strong></article>
+            <article class="kpi"><span>Mes</span><strong id="repMonth">—</strong></article>
+            <article class="kpi"><span>Año</span><strong id="repYear">—</strong></article>
+          </div>
+          <canvas id="chart" height="180"></canvas>
+        </div>
+      </section>
+
+      <section id="settings" class="view">
+        <div class="panel form-grid">
+          <div class="panel-head"><h3>Marca y datos</h3></div>
+          <label>Nombre del negocio<input id="setBusinessName" /></label>
+          <label>Moneda<select id="setCurrency"><option>USD</option><option>EUR</option><option>DOP</option><option>MXN</option><option>COP</option></select></label>
+          <label>Color principal<input id="setPrimary" type="color" /></label>
+          <label>Color acento<input id="setAccent" type="color" /></label>
+          <label>Logo<input id="setLogo" type="file" accept="image/*" /></label>
+          <button id="saveSettingsBtn" class="btn primary">Guardar configuración</button>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Datos</h3></div>
+          <div class="actions"><button id="exportJsonBtn" class="btn">Exportar JSON</button><label class="btn ghost file-btn">Importar JSON<input id="importJsonInput" type="file" accept="application/json" hidden /></label><button id="wipeBtn" class="btn danger">Borrar datos locales</button></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Sincronización Firebase</h3><span id="cloudStatus">Sin conexión</span></div>
+          <div class="actions"><button id="googleBtn" class="btn primary">Conectar Google</button><button id="signOutGoogleBtn" class="btn ghost">Desconectar</button><button id="pullBtn" class="btn">Traer nube</button><button id="pushBtn" class="btn">Enviar nube</button><label class="switch"><input id="autoSync" type="checkbox" /> AutoSync</label></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
